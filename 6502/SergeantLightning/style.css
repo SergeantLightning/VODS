@@ -1,0 +1,7 @@
+body {
+	font-family: Arial;
+}
+
+#machine, #ref {
+	display: none;
+}

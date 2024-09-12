@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SergeantLightning's 6502 Machine Emulator | Powered by the VODS Project</title>
+		<meta charset="UTF-8"/>
+		<meta name="robots" content="nofollow"/>
+		<link rel="stylesheet" href="./style.css"/>
+		<script src="./script.js"></script>
+	</head>
+	<body>
+		<div id="welcome">
+			<div align="center">
+				<h1>SergeantLightning's 6502 Machine Emulator</h1>
+				<h2>Powered by the VODS Project</h2>
+				<br><br>
+				<label for="img">Upload disk image (needs to be 16 KiB)</label>
+				<input type="file" id="img"/>
+				<br><br>
+				<button onclick="start()">Start Machine</button>&nbsp;&nbsp;
+				<button onclick="toggleRef()">View usage reference</button>
+			</div>
+			<div id="ref"></div>
+		</div>
+		<div id="machine"></div>
+	</body>
+</html>
