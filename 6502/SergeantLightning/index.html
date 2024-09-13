@@ -13,13 +13,16 @@
 				<h1>SergeantLightning's 6502 Machine Emulator</h1>
 				<h2>Powered by the VODS Project</h2>
 				<br><br>
-				<label for="img">Upload disk image (needs to be 16 KiB)</label>
+				<label for="img">Upload disk image (Can be up to 16 KiB)</label>
 				<input type="file" id="img"/>
 				<br><br>
 				<button onclick="start()">Start Machine</button>&nbsp;&nbsp;
 				<button onclick="toggleRef()">View usage reference</button>
+				<br><br><br><br>
 			</div>
-			<div id="ref"></div>
+			<div id="ref" align="center" style="display: none;">
+				<h1>User's Reference</h1>
+			</div>
 		</div>
 		<div id="machine"></div>
 	</body>

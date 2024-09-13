@@ -2,6 +2,6 @@ body {
 	font-family: Arial;
 }
 
-#machine, #ref {
+#machine {
 	display: none;
 }
