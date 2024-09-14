@@ -11,7 +11,7 @@
 		<div id="welcome">
 			<div align="center">
 				<h1>SergeantLightning's 6502 Machine Emulator</h1>
-				<h2>Powered by the VODS Project</h2>
+				<h2>Powered by <a href="https://github.com/SergeantLightning/VODS">the VODS Project</a></h2>
 				<br><br>
 				<label for="img">Upload disk image (Can be up to 16 KiB)</label>
 				<input type="file" id="img"/>
@@ -24,6 +24,21 @@
 				<h1>User's Reference</h1>
 			</div>
 		</div>
-		<div id="machine"></div>
+		<div id="machine" align="center">
+			<div id="regmon">
+				A = <span id="A">0</span> |
+				X = <span id="X">0</span> |
+				Y = <span id="Y">0</span> |
+				SP = <span id="SP">255</span> |
+				PC = <span id="PC">49152</span> |
+				<br><br>
+			</div>
+			<div id="screen" align="left"></div>
+			<div></div>
+			<br>
+			<button onclick="reset()">Reset</button>
+			&nbsp;&nbsp;
+			<button onclick="run()">Step</button>
+		</div>
 	</body>
 </html>

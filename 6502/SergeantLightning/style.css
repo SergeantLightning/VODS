@@ -1,7 +1,24 @@
+@font-face {
+	font-family: Dogica;
+	src: url("./dogica.ttf");
+	/* LINK TO FONT ONLINE: https://www.dafont.com/dogica.font */
+}
+
 body {
 	font-family: Arial;
 }
 
 #machine {
 	display: none;
+}
+
+#screen {
+	font-family: Dogica;
+	font-size: 16px;
+	color: #FFFFFF;
+	word-break: break-all;
+	line-height: 1.1;
+	width: 640px;
+	height: 440px;
+	background-color: #000000;
 }
