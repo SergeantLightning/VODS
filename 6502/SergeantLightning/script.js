@@ -14,6 +14,10 @@ var VRAM = [];                    // Mapped to addresses 48128 - 49149
 var KBIN = 0;                     // Mapped to address  49150
 var COM = 0;                      // Mapped to address  49151
 
+function randomByte() {
+	return Math.floor(Math.random() * 256);
+}
+
 function start() {
 	var file = document.getElementById("img").files[0];
 	if (file) {
@@ -42,8 +46,8 @@ function reset() {
 	for (var i = 0; i < 48128; i++) {
 		RAM[i] = 0;
 	}
-	for (var i = 0; i < 32; i++) {
-		RAM[i] = Math.floor(Math.random() * 256); // Fill the first 32 bytes of RAM with random bytes
+	for (var i = 0; i < 64; i++) {
+		RAM[i] = i;
 	}
 	console.log("RAM initialized");
 	for (var i = 0; i < 1022; i++) {
@@ -58,7 +62,6 @@ function reset() {
 	PC = (startAddr);
 	console.log("Program Counter set to: " + PC);
 	console.log("Starting machine...\n");
-	run();
 }
 
 function run() {
@@ -71,7 +74,12 @@ function run() {
 	var byte = ROM[(PC - 49152)];
 	console.log("Current instruction: " + byte);
 
-	// LDA varients
+	/*
+	
+		LDA varients
+
+	*/
+
 	if (byte == "a9") {
 		PC += 1;
 		A = ROM[(PC - 49152)];
@@ -112,8 +120,82 @@ function run() {
 		A = RAM[(memAddr + Y)];
 		PC += 1;
 	}
+	
+	/*
+	
+		LDX varients
 
-	// LDX Varients are up next
+	*/
+	
+	else if (byte == "a2") {
+		PC += 1;
+		X = ROM[(PC - 49152)];
+	} else if (byte == "a6") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		X = RAM[target];
+	} else if (byte == "b6") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += Y;
+		X = RAM[target];
+	} else if (byte == "ae") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		X = RAM[memAddr];
+		PC += 1;
+	} else if (byte == "be") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		X = RAM[(memAddr + Y)];
+		PC += 1;
+	}
+
+	/*
+	
+		LDY varients
+
+	*/
+	
+	else if (byte == "a0") {
+		PC += 1;
+		Y = ROM[(PC - 49152)];
+	} else if (byte == "a4") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		Y = RAM[target];
+	} else if (byte == "b4") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		Y = RAM[target];
+	} else if (byte == "ac") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		Y = RAM[memAddr];
+		PC += 1;
+	} else if (byte == "bc") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		Y = RAM[(memAddr + X)];
+		PC += 1;
+	}
 
 	PC += 1;
 	document.getElementById("A").innerHTML = A;
