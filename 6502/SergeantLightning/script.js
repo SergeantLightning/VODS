@@ -42,6 +42,7 @@ function start() {
 	}
 	document.getElementById("welcome").style.display = "none";
 	document.getElementById("machine").style.display = "block";
+	reset();
 }
 
 function updateRegMon() {
@@ -72,15 +73,15 @@ function updateFlagsByReg(regName) {
 }
 
 function updateScreen() {
-	var q = "";
-	for (var i = 0; i < 1000; i++) {
-		if (parseInt((RAM[48128 + i]), 16) < 32) {
-			q += "-";
-		} else {
-			q += String.fromCharCode(RAM[48128 + i]);
+	for (var OFS = 0; OFS < 25; OFS++) {
+		for (let i = 0; i < 40; i++) {
+			if (parseInt((RAM[(48128 + OFS) + i]), 16) < 32) {
+				document.getElementsByClassName("pixel")[(OFS * i)].innerHTML = "";
+			} else {
+				document.getElementsByClassName("pixel")[(OFS * i)].innerHTML = String.fromCharCode(RAM[(48128 + OFS) + i]);
+			}
 		}
 	}
-	setHTML("screen", q);
 }
 
 function reset() {
@@ -89,18 +90,17 @@ function reset() {
 	X = 2;
 	Y = 4;
 	SP = 255;
-	for (var i = 0; i < 8; i++) {
+	for (let i = 0; i < 8; i++) {
 		F[i] = 0;
 	}
 	console.log("Flags reset");
-	for (var i = 0; i < 49150; i++) {
+	for (let i = 0; i < 49150; i++) {
 		RAM[i] = 0;
 	}
-	for (var i = 0; i < 64; i++) {
+	for (let i = 0; i < 64; i++) {
 		RAM[i] = i;
 	}
 	console.log("RAM initialized");
-	document.getElementById("screen").innerHTML = "";
 	var startAddr = "" + ROM[16381] + ROM[16380]; // Load reset vector
 	console.log("Start address in hex: " + startAddr);
 	startAddr = parseInt(startAddr, 16);
@@ -108,6 +108,19 @@ function reset() {
 	PC = (startAddr);
 	console.log("Program Counter set to: " + PC);
 	updateRegMon();
+
+	// Draw Screen
+
+	var drawing = "";
+	for (let i = 0; i < 25; i++) {
+		drawing += "<tr class='pixel-row'>";
+		for (let q = 0; q < 40; q++) {
+			drawing += "<td class='pixel'></td>";
+		}
+		drawing += "</tr>";
+	}
+
+	document.getElementById("screen").innerHTML = drawing;
 	console.log("Starting machine...\n");
 }
 
@@ -269,12 +282,10 @@ function run() {
 	else if (byte == "85") { // Store to ZP
 		PC += 1;
 		RAM[parseInt(ROM[(PC - 49152)], 16)] = A;
-		updateScreen();
 	} else if (byte == "95") { // Store to ZP,X
 		PC += 1;
 		var addr = (parseInt(ROM[(PC - 49152)], 16)) + X;
 		RAM[addr] = A;
-		updateScreen();
 	}  else if (byte == "8d") { // Store to Addr
 		PC += 1;
 		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
@@ -284,7 +295,7 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr] = A;
 		PC += 1;
-		updateScreen();
+		updateScreen(memAddr);
 	}  else if (byte == "9d") { // Store to Addr,X
 		PC += 1;
 		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];

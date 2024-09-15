@@ -13,12 +13,27 @@ body {
 }
 
 #screen {
+	border-collapse: collapse;
 	font-family: Dogica;
-	font-size: 16px;
 	color: #FFFFFF;
-	word-break: break-all;
-	line-height: 1.1;
-	width: 640px;
-	height: 440px;
 	background-color: #000000;
+}
+
+.pixel-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.pixel {
+	text-align: center;
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.whitespace {
+	display: block;
+	color: #000000;
+	width: 16px;
+	height: 16px;
 }
