@@ -73,14 +73,8 @@ function updateFlagsByReg(regName) {
 }
 
 function updateScreen() {
-	for (var OFS = 0; OFS < 25; OFS++) {
-		for (let i = 0; i < 40; i++) {
-			if (parseInt((RAM[(48128 + OFS) + i]), 16) < 32) {
-				document.getElementsByClassName("pixel")[(OFS * i)].innerHTML = "";
-			} else {
-				document.getElementsByClassName("pixel")[(OFS * i)].innerHTML = String.fromCharCode(RAM[(48128 + OFS) + i]);
-			}
-		}
+	for (var i = 0; i < 1000; i++) {
+		document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
 	}
 }
 
@@ -316,6 +310,56 @@ function run() {
 		RAM[memAddr + Y] = A;
 		PC += 1;
 		updateScreen();
+	}
+
+	/*
+
+		STX varients
+
+	*/
+
+	else if (byte == "86") { // Store to ZP
+		PC += 1;
+		RAM[parseInt(ROM[(PC - 49152)], 16)] = X;
+	} else if (byte == "96") { // Store to ZP,Y
+		PC += 1;
+		var addr = (parseInt(ROM[(PC - 49152)], 16)) + Y;
+		RAM[addr] = X;
+	}  else if (byte == "8e") { // Store to Addr
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		RAM[memAddr] = X;
+		PC += 1;
+		updateScreen(memAddr);
+	}
+
+	/*
+
+		STY varients
+
+	*/
+
+	else if (byte == "84") { // Store to ZP
+		PC += 1;
+		RAM[parseInt(ROM[(PC - 49152)], 16)] = Y;
+	} else if (byte == "94") { // Store to ZP,X
+		PC += 1;
+		var addr = (parseInt(ROM[(PC - 49152)], 16)) + X;
+		RAM[addr] = Y;
+	}  else if (byte == "8c") { // Store to Addr
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		RAM[memAddr] = Y;
+		PC += 1;
+		updateScreen(memAddr);
 	}
 
 	PC += 1;
