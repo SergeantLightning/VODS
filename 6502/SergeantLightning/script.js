@@ -362,6 +362,71 @@ function run() {
 		updateScreen(memAddr);
 	}
 
+	/*
+
+		TAX
+
+	*/
+
+	else if (byte == "aa") {
+		X = A;
+		updateFlagsByReg("X");
+	}
+
+	/*
+
+		TAY
+
+	*/
+
+	else if (byte == "a8") {
+		Y = A;
+		updateFlagsByReg("Y");
+	}
+
+	/*
+
+		TXA
+
+	*/
+
+	else if (byte == "8a") {
+		A = X;
+		updateFlagsByReg("A");
+	}
+
+	/*
+
+		TYA
+
+	*/
+
+	else if (byte == "98") {
+		Y = A;
+		updateFlagsByReg("A");
+	}
+
+	/*
+
+		TSX
+
+	*/
+
+	else if (byte == "ba") {
+		X = SP;
+		updateFlagsByReg("X");
+	}
+
+	/*
+
+		TXS
+
+	*/
+
+	else if (byte == "9a") {
+		SP = X;
+	}
+
 	PC += 1;
 	updateRegMon();
 }
