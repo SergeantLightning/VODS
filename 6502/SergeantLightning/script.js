@@ -5,7 +5,7 @@ var X = 2;                        // X Register
 var Y = 4;                        // Y Register
 var SP = 255;                     // Stack Pointer
 var PC = 0;                       // Program Counter
-var F = [0, 0, 0, 0, 0, 0, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal, B, (unused), oVerflow, Negative
+var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal, B, (unused), oVerflow, Negative
 
 // Memory
 var ROM = [];                     // Mapped to addresses 49152 - 65535
@@ -425,6 +425,150 @@ function run() {
 
 	else if (byte == "9a") {
 		SP = X;
+	}
+
+	/*
+
+		PHA
+
+	*/
+
+	else if (byte == "48") {
+		RAM[256 + SP] = A;
+
+		if (SP <= 0) {
+			SP = 255;
+		} else {
+			SP -= 1;
+		}
+	}
+
+	/*
+
+		PHX
+
+	*/
+
+	else if (byte == "da") {
+		RAM[256 + SP] = X;
+
+		if (SP <= 0) {
+			SP = 255;
+		} else {
+			SP -= 1;
+		}
+	}
+
+	/*
+
+		PHY
+
+	*/
+
+	else if (byte == "5a") {
+		RAM[256 + SP] = Y;
+
+		if (SP <= 0) {
+			SP = 255;
+		} else {
+			SP -= 1;
+		}
+	}
+
+	/*
+
+		PHP
+
+	*/
+
+	else if (byte == "08") {
+		let temp = "";
+
+		for (let i = 0; i < 8; i++) {
+			temp += F[i];
+		}
+
+		temp = parseInt(temp, 2);
+
+		RAM[256 + SP] = temp;
+
+		if (SP <= 0) {
+			SP = 255;
+		} else {
+			SP -= 1;
+		}
+	}
+
+	/*
+
+		PLA
+
+	*/
+
+	else if (byte == "68") {
+		if (SP >= 255) {
+			SP = 0;
+		} else {
+			SP += 1;
+		}
+		A = RAM[256 + SP];
+		RAM[256 + SP] = 0;
+	}
+
+	/*
+
+		PLX
+
+	*/
+
+	else if (byte == "fa") {
+		if (SP >= 255) {
+			SP = 0;
+		} else {
+			SP += 1;
+		}
+		X = RAM[256 + SP];
+		RAM[256 + SP] = 0;
+	}
+
+	/*
+
+		PLY
+
+	*/
+
+	else if (byte == "7a") {
+		if (SP >= 255) {
+			SP = 0;
+		} else {
+			SP += 1;
+		}
+		Y = RAM[256 + SP];
+		RAM[256 + SP] = 0;
+	}
+
+	/*
+
+		PLP
+
+	*/
+
+	else if (byte == "28") {
+		var temp = "";
+
+		if (SP >= 255) {
+			SP = 0;
+		} else {
+			SP += 1;
+		}
+
+		temp = RAM[256 + SP];
+		temp = (temp >>> 0).toString(2).padStart(8, '0');
+
+		for (let i = 0; i < 8; i++) {
+			F[i] = temp.charAt(i);
+		}
+		RAM[256 + SP] = 0;
 	}
 
 	PC += 1;
