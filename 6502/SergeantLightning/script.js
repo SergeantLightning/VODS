@@ -624,6 +624,112 @@ function run() {
 		updateFlagsByReg("A");
 	}
 
+	/*
+	
+		EOR
+
+	*/
+
+	if (byte == "49") {
+		PC += 1;
+		A = A ^ parseInt(ROM[(PC - 49152)], 16);
+		updateFlagsByReg("A");
+	} else if (byte == "45") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		A = A ^ RAM[target];
+		updateFlagsByReg("A");
+	} else if (byte == "55") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		A = A ^ RAM[target];
+		updateFlagsByReg("A");
+	} else if (byte == "4d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A ^ RAM[memAddr];
+		PC += 1;
+		updateFlagsByReg("A");
+	} else if (byte == "5d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A ^ RAM[(memAddr + X)];
+		PC += 1;
+		updateFlagsByReg("A");
+	} else if (byte == "59") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A ^ RAM[(memAddr + Y)];
+		PC += 1;
+		updateFlagsByReg("A");
+	}
+
+	/*
+	
+		ORA
+
+	*/
+
+	if (byte == "09") {
+		PC += 1;
+		A = A | parseInt(ROM[(PC - 49152)], 16);
+		updateFlagsByReg("A");
+	} else if (byte == "05") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		A = A | RAM[target];
+		updateFlagsByReg("A");
+	} else if (byte == "15") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		A = A | RAM[target];
+		updateFlagsByReg("A");
+	} else if (byte == "0d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A | RAM[memAddr];
+		PC += 1;
+		updateFlagsByReg("A");
+	} else if (byte == "1d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A | RAM[(memAddr + X)];
+		PC += 1;
+		updateFlagsByReg("A");
+	} else if (byte == "19") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A = A | RAM[(memAddr + Y)];
+		PC += 1;
+		updateFlagsByReg("A");
+	}
+
 	PC += 1;
 	updateRegMon();
 }
