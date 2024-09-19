@@ -730,6 +730,115 @@ function run() {
 		updateFlagsByReg("A");
 	}
 
+	/*
+
+		(BUGGED INSTRUCTION, DEACTIVATED) BIT varients
+
+	else if (byte == "24") { // Store to ZP
+		PC += 1;
+		var temp = A;
+		temp = temp & RAM[parseInt(ROM[(PC - 49152)], 16)];
+		(temp > 0) ? (F[1] = 0) : (F[1] = 1);
+		temp = RAM[parseInt(ROM[(PC - 49152)], 16)].toString(2);
+		F[7] = Number(temp.charAt(7)); // Set Negative Flag
+		F[6] = Number(temp.charAt(6)); // Set Overflow Flag
+		updateRegMon();
+	} else if (byte == "2c") { // Store to Addr
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		var temp = A;
+		temp = temp & Q;
+		(temp > 0) ? (F[1] = 0) : (F[1] = 1);
+		temp = Q.toString(2);
+		F[7] = Number(temp.charAt(7)); // Set Negative Flag
+		F[6] = Number(temp.charAt(6)); // Set Overflow Flag
+		PC += 1;
+		updateRegMon();
+	}
+
+	*/
+
+	/*
+	
+		ADC varients
+
+	*/
+
+	if (byte == "69") {
+		PC += 1;
+		A += parseInt(ROM[(PC - 49152)], 16);
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	} else if (byte == "65") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		A += RAM[target];
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	} else if (byte == "75") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		A += RAM[target];
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	} else if (byte == "6d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A += RAM[memAddr];
+		PC += 1;
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	} else if (byte == "7d") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A += RAM[(memAddr + X)];
+		PC += 1;
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	} else if (byte == "79") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		A += RAM[(memAddr + Y)];
+		PC += 1;
+		updateFlagsByReg("A");
+		if (A >= 256) {
+			F[0] = 1;
+			A -= 255;
+		}
+	}
+
 	PC += 1;
 	updateRegMon();
 }
