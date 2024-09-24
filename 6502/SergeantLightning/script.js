@@ -1043,6 +1043,96 @@ function run() {
 		updateFlagsByReg("A");
 	}
 
+	/*
+	
+		CPX varients
+
+	*/
+
+	if (byte == "e0") {
+		PC += 1;
+		var temp = parseInt(ROM[(PC - 49152)], 16);
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	} else if (byte == "e4") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		var temp = RAM[target];
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	} else if (byte == "ec") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		var temp = RAM[memAddr];
+		PC += 1;
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	}
+
+	/*
+	
+		CPY varients
+
+	*/
+
+	if (byte == "c0") {
+		PC += 1;
+		var temp = parseInt(ROM[(PC - 49152)], 16);
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	} else if (byte == "c4") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		var temp = RAM[target];
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	} else if (byte == "cc") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		var temp = RAM[memAddr];
+		PC += 1;
+		if (X >= temp) {
+			F[0] = 1; // Set carry flag
+		} else {
+			F[0] = 0;
+		}
+		(X - temp > 127) ? (F[7] = 1) : (F[7] = 0);
+		(X - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+	}
+
 	PC += 1;
 	updateRegMon();
 }
