@@ -1333,6 +1333,69 @@ function run() {
 		updateFlagsByRAM(memAddr);
 	}
 
+	/*
+	
+		LSR varients
+
+	*/
+
+	else if (byte == "4a") { // Accumulator
+		F[0] = Number(A.toString(2).padStart(8, "0").charAt(7));
+		A /= 2;
+		if (A < 0) {
+			A = 0;
+		}
+		updateFlagsByReg("A");
+	} else if (byte == "46") { // ZP
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		F[0] = Number(RAM[target].toString(2).padStart(8, "0").charAt(7));
+		RAM[target] /= 2;
+		if (RAM[target] < 0) {
+			RAM[target] = 0;
+		}
+		updateFlagsByRAM(target);
+	} else if (byte == "56") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		F[0] = Number(RAM[target].toString(2).padStart(8, "0").charAt(7));
+		RAM[target] /= 2;
+		if (RAM[target] < 0) {
+			RAM[target] = 0;
+		}
+		updateFlagsByRAM(target);
+	} else if (byte == "4e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		F[0] = Number(RAM[memAddr].toString(2).padStart(8, "0").charAt(7));
+		RAM[memAddr] /= 2;
+		if (RAM[memAddr] < 0) {
+			RAM[memAddr] = 0;
+		}
+		PC += 1;
+		updateFlagsByRAM(memAddr);
+	} else if (byte == "5e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		memAddr += X;
+		console.log("Using decimal memory address: " + memAddr);
+		F[0] = Number(RAM[memAddr].toString(2).padStart(8, "0").charAt(7));
+		RAM[memAddr] /= 2;
+		if (RAM[memAddr] < 0) {
+			RAM[memAddr] = 0;
+		}
+		PC += 1;
+		updateFlagsByRAM(memAddr);
+	}
+
 	PC += 1;
 	updateRegMon();
 }
