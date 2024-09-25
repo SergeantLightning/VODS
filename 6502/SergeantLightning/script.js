@@ -72,6 +72,11 @@ function updateFlagsByReg(regName) {
 	}
 }
 
+function updateFlagsByRAM(addr) {
+	(addr > 127) ? (F[7] = 1) : (F[7] = 0);
+	(addr == 0) ? (F[1] = 1) : (F[1] = 0);
+}
+
 function updateScreen() {
 	for (var i = 0; i < 1000; i++) {
 		document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
@@ -1248,6 +1253,84 @@ function run() {
 	else if (byte == "88") {
 		Y += 1;
 		updateFlagsByReg("A");
+	}
+
+	/*
+	
+		ASL varients
+
+	*/
+
+	else if (byte == "0a") { // Accumulator
+		A *= 2;
+		if (A < 255) {
+			F[0] = 0;
+		} else {
+			var mask = 255;
+			A = A & mask;
+			F[0] = 1;
+		}
+		updateFlagsByReg("A");
+	} else if (byte == "06") { // ZP
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
+			F[0] = 0;
+		} else {
+			var mask = 255;
+			RAM[target] = RAM[target] & mask;
+			F[0] = 1;
+		}
+		updateFlagsByRAM(target);
+	} else if (byte == "16") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
+			F[0] = 0;
+		} else {
+			var mask = 255;
+			RAM[target] = RAM[target] & mask;
+			F[0] = 1;
+		}
+		updateFlagsByRAM(target);
+	} else if (byte == "0e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		RAM[memAddr] *= 2;
+		if (RAM[memAddr] < 255) {
+			F[0] = 0;
+		} else {
+			var mask = 255;
+			RAM[memAddr] = RAM[memAddr] & mask;
+			F[0] = 1;
+		}
+		PC += 1;
+		updateFlagsByRAM(memAddr);
+	} else if (byte == "1e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		memAddr += X;
+		console.log("Using decimal memory address: " + memAddr);
+		RAM[memAddr] *= 2;
+		if (RAM[memAddr] < 255) {
+			F[0] = 0;
+		} else {
+			var mask = 255;
+			RAM[memAddr] = RAM[memAddr] & mask;
+			F[0] = 1;
+		}
+		PC += 1;
+		updateFlagsByRAM(memAddr);
 	}
 
 	PC += 1;
