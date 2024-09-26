@@ -1638,6 +1638,40 @@ function run() {
 		PC -= 1;
 	}
 
+	/*
+
+		JSR
+
+	*/
+
+	else if (byte == "20") {
+		PC += 1;
+		var temp = "" + RAM[PC + 1] + RAM[PC]; // Jump address
+		RAM[256 + SP] = (PC + 2);
+		if (SP <= 0) {
+			SP = 255;
+		} else {
+			SP -= 1;
+		}
+		temp = parseInt(temp, 16);
+		PC = temp;
+		PC -= 1;
+		console.log("Subroutine address: " + PC);
+	}
+
+	/*
+
+		RTS
+
+	*/
+
+	else if (byte == "60") {
+		SP += 1;
+		PC = RAM[256 + SP];
+		PC -= 1;
+		RAM[256 + SP] = 0;
+	}
+
 	PC += 1;
 	updateRegMon();
 }
