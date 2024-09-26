@@ -1489,6 +1489,84 @@ function run() {
 		updateFlagsByRAM(memAddr);
 	}
 
+	/*
+	
+		ROR varients
+
+	*/
+
+	else if (byte == "6a") { // Accumulator
+		var temp = A.toString(2).padStart(8, "0");
+		temp = Number(temp.charAt(7)); // New carry flag value
+		A /= 2;
+		if (A < 1) {
+			A = 0;
+		}
+		(F[0] == 1) ? (A += 128) : (A += 0);
+		F[0] = temp;
+		updateFlagsByReg("A");
+	} else if (byte == "66") { // ZP
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		var temp = RAM[target].toString(2).padStart(8, "0");
+		temp = Number(temp.charAt(7)); // New carry flag value
+		RAM[target] /= 2;
+		if (RAM[target] < 1) {
+			RAM[target] = 0;
+		}
+		(F[0] == 1) ? (RAM[target] += 128) : (RAM[target] += 0);
+		F[0] = temp;
+		updateFlagsByRAM(target);
+	} else if (byte == "76") {
+		PC += 1;
+		var target = parseInt(ROM[(PC - 49152)], 16);
+		target += X;
+		var temp = RAM[target].toString(2).padStart(8, "0");
+		temp = Number(temp.charAt(7)); // New carry flag value
+		RAM[target] /= 2;
+		if (RAM[target] < 1) {
+			RAM[target] = 0;
+		}
+		(F[0] == 1) ? (RAM[target] += 128) : (RAM[target] += 0);
+		F[0] = temp;
+		updateFlagsByRAM(target);
+	} else if (byte == "6e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		console.log("Using decimal memory address: " + memAddr);
+		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		temp = Number(temp.charAt(7)); // New carry flag value
+		RAM[memAddr] /= 2;
+		if (RAM[memAddr] < 1) {
+			RAM[memAddr] = 0;
+		}
+		(F[0] == 1) ? (RAM[memAddr] += 128) : (RAM[memAddr] += 0);
+		F[0] = temp;
+		PC += 1;
+		updateFlagsByRAM(memAddr);
+	} else if (byte == "7e") {
+		PC += 1;
+		var Q = "" + ROM[(PC - 49151)] + ROM[(PC - 49152)];
+		console.log("Using hex memory address: " + Q);
+		var memAddr = parseInt(Q, 16);
+		memAddr = Number(memAddr);
+		memAddr += X;
+		console.log("Using decimal memory address: " + memAddr);
+		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		temp = Number(temp.charAt(7)); // New carry flag value
+		RAM[memAddr] /= 2;
+		if (RAM[memAddr] < 1) {
+			RAM[memAddr] = 0;
+		}
+		(F[0] == 1) ? (RAM[memAddr] += 128) : (RAM[memAddr] += 0);
+		F[0] = temp;
+		PC += 1;
+		updateFlagsByRAM(memAddr);
+	}
+
 	PC += 1;
 	updateRegMon();
 }
