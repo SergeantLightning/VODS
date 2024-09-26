@@ -7,7 +7,7 @@
 - Screen memory is from 0xBC00 (top left) to 0xBFE7 (bottom right)
 - (WHEN COLOR IS ADDED) Foreground color value is at address 0xBFE8, background color value is at 0xBFE9. Planning to have 8 or 16 color palette
 - Indirect addressing is NOT implemented for any instructions yet.
-- You CAN'T load bytes from ROM, meaning you can use things like LDA $0 but NOT LDA $C000
+- Unlike past versions, you now have control over all of the memory instead of just the first 48KiB. Please make sure you don't write to ROM addresses, as protections for that have not been implemented yet
 
 ## Goals
 
