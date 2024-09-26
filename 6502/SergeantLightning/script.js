@@ -1146,12 +1146,20 @@ function run() {
 	else if (byte == "e6") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
-		RAM[target] += 1;
+		if (RAM[target] == 255) {
+			RAM[target] = 0;
+		} else {
+			RAM[target] += 1;
+		}
 	} else if (byte == "f6") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
 		target += X;
-		RAM[target] += 1;
+		if (RAM[target] == 255) {
+			RAM[target] = 0;
+		} else {
+			RAM[target] += 1;
+		}
 	} else if (byte == "ee") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -1159,16 +1167,24 @@ function run() {
 		var memAddr = parseInt(Q, 16);
 		memAddr = Number(memAddr);
 		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] += 1;
+		if (RAM[memAddr] == 255) {
+			RAM[memAddr] = 0;
+		} else {
+			RAM[memAddr] += 1;
+		}
 		PC += 1;
 	} else if (byte == "fe") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
-		console.log("Using hex memory address: " + Q);
 		var memAddr = parseInt(Q, 16);
 		memAddr = Number(memAddr);
+		memAddr += X;
 		console.log("Using decimal memory address: " + memAddr);
-		RAM[(memAddr + X)] += 1;
+		if (RAM[memAddr] == 255) {
+			RAM[memAddr] = 0;
+		} else {
+			RAM[memAddr] += 1;
+		}
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -1180,7 +1196,12 @@ function run() {
 	*/
 
 	else if (byte == "e8") {
-		X += 1;
+		if (X == 255) {
+			X = 0;
+		} else {
+			X += 1;
+		}
+		updateFlagsByReg("X");
 	}
 
 	/*
@@ -1190,7 +1211,12 @@ function run() {
 	*/
 
 	else if (byte == "c8") {
-		Y += 1;
+		if (Y == 255) {
+			Y = 0;
+		} else {
+			Y += 1;
+		}
+		updateFlagsByReg("Y");
 	}
 
 	/*
@@ -1202,13 +1228,21 @@ function run() {
 	else if (byte == "c6") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
-		RAM[target] -= 1;
+		if (RAM[target] == 0) {
+			RAM[target] = 255;
+		} else {
+			RAM[target] -= 1;
+		}
 		updateFlagsByReg("A");
 	} else if (byte == "e6") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
 		target += X;
-		RAM[target] -= 1;
+		if (RAM[target] == 0) {
+			RAM[target] = 255;
+		} else {
+			RAM[target] -= 1;
+		}
 		updateFlagsByReg("A");
 	} else if (byte == "ce") {
 		PC += 1;
@@ -1217,7 +1251,11 @@ function run() {
 		var memAddr = parseInt(Q, 16);
 		memAddr = Number(memAddr);
 		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] -= 1;
+		if (RAM[memAddr] == 0) {
+			RAM[memAddr] = 255;
+		} else {
+			RAM[memAddr] -= 1;
+		}
 		updateFlagsByReg("A");
 		PC += 1;
 	} else if (byte == "de") {
@@ -1226,8 +1264,13 @@ function run() {
 		console.log("Using hex memory address: " + Q);
 		var memAddr = parseInt(Q, 16);
 		memAddr = Number(memAddr);
+		memAddr += X;
 		console.log("Using decimal memory address: " + memAddr);
-		RAM[(memAddr + X)] -= 1;
+		if (RAM[memAddr] == 0) {
+			RAM[memAddr] = 255;
+		} else {
+			RAM[memAddr] -= 1;
+		}
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -1239,8 +1282,12 @@ function run() {
 	*/
 
 	else if (byte == "ca") {
-		X -= 1;
-		updateFlagsByReg("A");
+		if (X == 0) {
+			X = 255;
+		} else {
+			X -= 1;
+		}
+		updateFlagsByReg("X");
 	}
 
 	/*
@@ -1250,8 +1297,12 @@ function run() {
 	*/
 
 	else if (byte == "88") {
-		Y += 1;
-		updateFlagsByReg("A");
+		if (X == 0) {
+			X = 255;
+		} else {
+			X -= 1;
+		}
+		updateFlagsByReg("Y");
 	}
 
 	/*
@@ -1564,6 +1615,27 @@ function run() {
 		F[0] = temp;
 		PC += 1;
 		updateFlagsByRAM(memAddr);
+	}
+
+	/*
+
+		JMP Varients
+
+	*/
+
+	else if (byte == "4c") { // Absolute
+		PC += 1;
+		var temp = "" + RAM[PC + 1] + RAM[PC];
+		temp = parseInt(temp, 16);
+		PC = temp;
+		PC -= 1;
+	} else if (byte == "6c") { // Indirect
+		PC += 1;
+		var temp = "" + RAM[PC + 1] + RAM[PC];
+		temp = parseInt(temp, 16);
+		var target = "" + RAM[temp + 1] + RAM[temp];
+		PC = parseInt(target, 16);
+		PC -= 1;
 	}
 
 	PC += 1;
