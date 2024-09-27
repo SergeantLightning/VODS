@@ -1694,6 +1694,72 @@ function run() {
 		(F[0] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
 	}
 
+	/*
+
+		BEQ
+
+	*/
+
+	else if (byte == "f0") {
+		PC += 1;
+		(F[1] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BMI
+
+	*/
+
+	else if (byte == "30") {
+		PC += 1;
+		(F[7] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BNE
+
+	*/
+
+	else if (byte == "d0") {
+		PC += 1;
+		(F[1] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BPL
+
+	*/
+
+	else if (byte == "10") {
+		PC += 1;
+		(F[7] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BVC
+
+	*/
+
+	else if (byte == "50") {
+		PC += 1;
+		(F[6] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BVS
+
+	*/
+
+	else if (byte == "70") {
+		PC += 1;
+		(F[6] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
 	PC += 1;
 	updateRegMon();
 }
