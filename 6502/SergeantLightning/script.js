@@ -1672,6 +1672,28 @@ function run() {
 		RAM[256 + SP] = 0;
 	}
 
+	/*
+
+		BCC
+
+	*/
+
+	else if (byte == "90") {
+		PC += 1;
+		(F[0] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
+	/*
+
+		BCS
+
+	*/
+
+	else if (byte == "b0") {
+		PC += 1;
+		(F[0] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+	}
+
 	PC += 1;
 	updateRegMon();
 }
