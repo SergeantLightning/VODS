@@ -1770,8 +1770,138 @@ function run() {
 		(F[6] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
 	}
 
+	/*
+	
+		CLC
+	
+	*/
+
+	else if (byte == "18") {
+		F[0] = 0;
+	}
+
+	/*
+	
+		CLD
+	
+	*/
+
+	else if (byte == "d8") {
+		F[3] = 0;
+	}
+
+	/*
+	
+		CLI
+	
+	*/
+
+	else if (byte == "58") {
+		F[2] = 0;
+	}
+
+	/*
+	
+		CLV
+	
+	*/
+
+	else if (byte == "b8") {
+		F[6] = 0;
+	}
+
+	/*
+	
+		SEC
+	
+	*/
+
+	else if (byte == "38") {
+		F[0] = 1;
+	}
+
+	/*
+	
+		SED
+	
+	*/
+
+	else if (byte == "f8") {
+		F[3] = 1;
+	}
+
+	/*
+	
+		SEI
+	
+	*/
+
+	else if (byte == "78") {
+		F[2] = 1;
+	}
+
+	/*
+	
+		BRK
+	
+	*/
+
+	else if (byte == "00" || byte == "0") {
+		F[4] = 1;
+	}
+
+	/*
+	
+		NOP
+	
+	*/
+
+	else if (byte == "ea") {
+		// Do nothing
+	}
+
+	/*
+	
+		RTI
+	
+	*/
+
+	else if (byte == "40") {
+		// Pull Flags
+		var temp = "";
+
+		if (SP >= 255) {
+			SP = 0;
+		} else {
+			SP += 1;
+		}
+
+		temp = RAM[256 + SP];
+		temp = (temp >>> 0).toString(2).padStart(8, '0');
+
+		for (let i = 0; i < 8; i++) {
+			F[i] = temp.charAt(i);
+		}
+		RAM[256 + SP] = 0;
+
+		// Pull PC
+
+		SP += 1;
+		PC = RAM[256 + SP];
+		PC -= 1;
+		RAM[256 + SP] = 0;
+	}
+
 	PC += 1;
 	updateRegMon();
+
+	// Dump Stack Contents On Console
+
+	var stackDump = "";
+	for (var i = 0; i < 256; i++) {
+		stackDump += RAM[256 + i] + " ";
+	}
+	console.log("Stack Dump:\n\n" + stackDump);
 
 	lastTime = currentTime - (deltaTime % timeStep);
     }

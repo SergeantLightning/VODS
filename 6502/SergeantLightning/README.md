@@ -17,8 +17,6 @@
 ## Todo
 - Add support for the following instructions:
 	- BIT
-	- Jumps & branches
-	- Status flag changes
 	- RTS + RTI + BRK + NOP
 - Add support for indexed-indirect addressing (X register ONLY)
 - Add keyboard capturing
