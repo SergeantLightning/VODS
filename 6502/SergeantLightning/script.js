@@ -12,6 +12,11 @@ var RAM = [];                     // Mapped to addresses 0 - 65535
 var KBIN = 0;                     // Mapped to address  49150
 var COM = 0;                      // Mapped to address  49151
 
+// Speed emulation
+
+let lastTime = performance.now();
+const timeStep = 1000 / 240; // 240 Hz, emulation has no difference past this
+
 function randomByte() {
 	return Math.floor(Math.random() * 256);
 }
@@ -123,6 +128,11 @@ function reset() {
 }
 
 function run() {
+	const currentTime = performance.now();
+    const deltaTime = currentTime - lastTime;
+	if (deltaTime >= timeStep) {
+		// Run your emulation logic here
+		lastTime = currentTime - (deltaTime % timeStep);
 	/*
 	
 		WARNING: SUPER LONG IF ELSE BLOCK COMING
@@ -1762,6 +1772,12 @@ function run() {
 
 	PC += 1;
 	updateRegMon();
+
+	lastTime = currentTime - (deltaTime % timeStep);
+    }
+	if (document.getElementById("runbox").checked) {
+		requestAnimationFrame(run);
+	}
 }
 
 function toggleRef() {
