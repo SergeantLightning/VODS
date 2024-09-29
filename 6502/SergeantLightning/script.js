@@ -64,8 +64,45 @@ function updateFlagsByRAM(addr) {
 }
 
 function updateScreen() {
+	// Update Characters
 	for (var i = 0; i < 1000; i++) {
 		document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
+		// Set Text Color
+		if (RAM[49128] == 0) {
+			document.getElementsByClassName("pixel")[i].style.color = "#000";
+		} else if (RAM[49128] == 1) {
+			document.getElementsByClassName("pixel")[i].style.color = "#F00";
+		} else if (RAM[49128] == 2) {
+			document.getElementsByClassName("pixel")[i].style.color = "#0F0";
+		} else if (RAM[49128] == 3) {
+			document.getElementsByClassName("pixel")[i].style.color = "#FF0";
+		} else if (RAM[49128] == 4) {
+			document.getElementsByClassName("pixel")[i].style.color = "#00F";
+		} else if (RAM[49128] == 5) {
+			document.getElementsByClassName("pixel")[i].style.color = "#F0F";
+		} else if (RAM[49128] == 6) {
+			document.getElementsByClassName("pixel")[i].style.color = "#0FF";
+		} else if (RAM[49128] == 7) {
+			document.getElementsByClassName("pixel")[i].style.color = "#FFF";
+		}
+		// Set Background Color
+		if (RAM[49129] == 0) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#000";
+		} else if (RAM[49128] == 1) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#F00";
+		} else if (RAM[49128] == 2) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#0F0";
+		} else if (RAM[49128] == 3) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#FF0";
+		} else if (RAM[49128] == 4) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#00F";
+		} else if (RAM[49128] == 5) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#F0F";
+		} else if (RAM[49128] == 6) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#0FF";
+		} else if (RAM[49128] == 7) {
+			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#FFF";
+		}
 	}
 }
 
@@ -85,6 +122,7 @@ function reset() {
 	for (let i = 0; i < 64; i++) {
 		RAM[i] = i;
 	}
+	RAM[49128] = 7;
 	var file = document.getElementById("img").files[0];
 	if (file) {
 		const reader = new FileReader();        
@@ -118,7 +156,7 @@ function reset() {
 	for (let i = 0; i < 25; i++) {
 		drawing += "<tr class='pixel-row'>";
 		for (let q = 0; q < 40; q++) {
-			drawing += "<td class='pixel'></td>";
+			drawing += "<td class='pixel' style='color: #FFFFFF; background-color: #000000'></td>";
 		}
 		drawing += "</tr>";
 	}
@@ -303,7 +341,7 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr] = A;
 		PC += 1;
-		updateScreen(memAddr);
+		updateScreen();
 	}  else if (byte == "9d") { // Store to Addr,X
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -348,7 +386,7 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr] = X;
 		PC += 1;
-		updateScreen(memAddr);
+		updateScreen();
 	}
 
 	/*
@@ -373,7 +411,7 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr] = Y;
 		PC += 1;
-		updateScreen(memAddr);
+		updateScreen();
 	}
 
 	/*
