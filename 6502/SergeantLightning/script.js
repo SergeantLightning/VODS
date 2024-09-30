@@ -115,6 +115,7 @@ window.onkeydown = function(event) {
 	} else {
 		RAM[49150] = Number(keycode.charCodeAt(0)).toString(16);
 	}
+	console.log(keycode);
 }
 
 function reset() {
@@ -134,6 +135,7 @@ function reset() {
 		RAM[i] = i;
 	}
 	RAM[49128] = 7;
+	RAM[49150] = 0;
 	var file = document.getElementById("img").files[0];
 	if (file) {
 		const reader = new FileReader();        
@@ -1029,8 +1031,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 	} else if (byte == "c5") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
@@ -1040,8 +1042,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 	} else if (byte == "d5") {
 		PC += 1;
 		var target = parseInt(RAM[PC], 16);
@@ -1052,8 +1054,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 	} else if (byte == "cd") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -1068,8 +1070,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 	} else if (byte == "dd") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -1083,8 +1085,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "d9") {
@@ -1100,8 +1102,8 @@ function run() {
 		} else {
 			F[0] = 0;
 		}
-		(A - temp > 127) ? (F[7] = 1) : (F[7] = 0);
-		(A - temp == 0) ? (F[1] = 1) : (F[1] = 0);
+		((A - temp) > 127) ? (F[7] = 1) : (F[7] = 0);
+		((A - temp) == 0) ? (F[1] = 1) : (F[1] = 0);
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -1739,7 +1741,15 @@ function run() {
 
 	else if (byte == "90") {
 		PC += 1;
-		(F[0] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[0] == 0) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1750,7 +1760,15 @@ function run() {
 
 	else if (byte == "b0") {
 		PC += 1;
-		(F[0] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[0] == 1) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1761,7 +1779,15 @@ function run() {
 
 	else if (byte == "f0") {
 		PC += 1;
-		(F[1] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[1] == 1) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1772,7 +1798,15 @@ function run() {
 
 	else if (byte == "30") {
 		PC += 1;
-		(F[7] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[7] == 1) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1783,7 +1817,15 @@ function run() {
 
 	else if (byte == "d0") {
 		PC += 1;
-		(F[1] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[1] == 0) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1794,7 +1836,15 @@ function run() {
 
 	else if (byte == "10") {
 		PC += 1;
-		(F[7] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[7] == 0) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1805,7 +1855,15 @@ function run() {
 
 	else if (byte == "50") {
 		PC += 1;
-		(F[6] == 0) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[6] == 0) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
@@ -1816,7 +1874,15 @@ function run() {
 
 	else if (byte == "70") {
 		PC += 1;
-		(F[6] == 1) ? (PC += parseInt(RAM[PC], 16)) : (PC += 0);
+		if (F[6] == 1) {
+			if (parseInt(RAM[PC], 16) < 127) {
+				PC += parseInt(RAM[PC], 16);
+				console.log("Jumping forward");
+			} else {
+				PC += (Number(parseInt(RAM[PC], 16)) - 256);
+				console.log("Jumping back");
+			}
+		}
 	}
 
 	/*
