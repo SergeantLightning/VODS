@@ -8,11 +8,9 @@ var PC = 0;                       // Program Counter
 var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal, B, (unused), oVerflow, Negative
 
 // Memory
-var RAM = [];                     // Mapped to addresses 0 - 65535
-var KBIN = 0;                     // Mapped to address  49150
-var COM = 0;                      // Mapped to address  49151
+var RAM = [];                     // Mapped to addresses 0 - 65535, Keyboard Last Pressed Key Mapped to address 49150, Serial Port Data Mapped to address 49151
 
-// Speed emulation
+// Speed emulation variables
 
 let lastTime = performance.now();
 const timeStep = 1000 / 240; // 240 Hz, emulation has no difference past this
@@ -103,6 +101,19 @@ function updateScreen() {
 		} else if (RAM[49128] == 7) {
 			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#FFF";
 		}
+	}
+}
+
+window.onkeydown = function(event) {
+	let keycode = event.key;
+	if (keycode == "Backspace") {
+		RAM[49150] = 8;
+	} else if (keycode == "Enter") {
+		RAM[49150] = 13;
+	} else if (keycode == "Shift") {
+		//
+	} else {
+		RAM[49150] = Number(keycode.charCodeAt(0)).toString(16);
 	}
 }
 
