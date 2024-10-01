@@ -9,6 +9,7 @@ var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal
 
 // Memory
 var RAM = [];                     // Mapped to addresses 0 - 65535, Keyboard Last Pressed Key Mapped to address 49150, Serial Port Data Mapped to address 49151
+var COLSET = ["#000", "#F00", "#0F0", "#FF0", "#00F", "#F0F", "#0FF", "@FFF"];
 
 // Speed emulation variables
 
@@ -65,42 +66,12 @@ function updateScreen() {
 	// Update Characters
 	for (var i = 0; i < 1000; i++) {
 		document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
+
 		// Set Text Color
-		if (RAM[49128] == 0) {
-			document.getElementsByClassName("pixel")[i].style.color = "#000";
-		} else if (RAM[49128] == 1) {
-			document.getElementsByClassName("pixel")[i].style.color = "#F00";
-		} else if (RAM[49128] == 2) {
-			document.getElementsByClassName("pixel")[i].style.color = "#0F0";
-		} else if (RAM[49128] == 3) {
-			document.getElementsByClassName("pixel")[i].style.color = "#FF0";
-		} else if (RAM[49128] == 4) {
-			document.getElementsByClassName("pixel")[i].style.color = "#00F";
-		} else if (RAM[49128] == 5) {
-			document.getElementsByClassName("pixel")[i].style.color = "#F0F";
-		} else if (RAM[49128] == 6) {
-			document.getElementsByClassName("pixel")[i].style.color = "#0FF";
-		} else if (RAM[49128] == 7) {
-			document.getElementsByClassName("pixel")[i].style.color = "#FFF";
-		}
-		// Set Background Color
-		if (RAM[49129] == 0) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#000";
-		} else if (RAM[49128] == 1) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#F00";
-		} else if (RAM[49128] == 2) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#0F0";
-		} else if (RAM[49128] == 3) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#FF0";
-		} else if (RAM[49128] == 4) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#00F";
-		} else if (RAM[49128] == 5) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#F0F";
-		} else if (RAM[49128] == 6) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#0FF";
-		} else if (RAM[49128] == 7) {
-			document.getElementsByClassName("pixel")[i].style.backgroundColor = "#FFF";
-		}
+		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(RAM[49128])];
+
+		// Set BG Color
+		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(RAM[49128])];
 	}
 }
 
@@ -109,7 +80,7 @@ window.onkeydown = function(event) {
 	if (keycode == "Backspace") {
 		RAM[49150] = 8;
 	} else if (keycode == "Enter") {
-		RAM[49150] = 13;
+		RAM[49150] = "d"; // Hex version of decimal 13
 	} else if (keycode == "Shift") {
 		//
 	} else {
