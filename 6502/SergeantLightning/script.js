@@ -66,21 +66,55 @@ function updateFlagsByRAM(addr) {
 	(addr == 0) ? (F[1] = 1) : (F[1] = 0);
 }
 
+function TTYScrollUp(type) {
+	for (var i = 0; i < 40; i++) {
+		document.getElementsByClassName("pixel")[i].innerHTML = "";
+	}
+	for (var i = 40; i < 1000; i++) {
+		document.getElementsByClassName("pixel")[i - 40].innerHTML = document.getElementsByClassName("pixel")[i].innerHTML;
+		document.getElementsByClassName("pixel")[i].innerHTML = "";
+	}
+	if (type == 0) {
+		HOFS += 1;
+	}
+	VOFS -= 1;
+}
+
 function updateScreen() {
 	// Update Characters
 	if (RAM[49129] == 1) {
 		for (var i = 0; i < 1000; i++) {
 			document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
 		}
-	} else {
-		document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(RAM[48128]);
-		if (VOFS >= 25) {
-			console.log("Teletype Overflow");
-		} else if (HOFS == 40) {
-			HOFS = 0;
-			VOFS += 1;
+	} else { // Teletype mode
+		if (RAM[48128] == 13) {
+			console.log("Detected Enter");
+			if (VOFS == 24) {
+				TTYScrollUp(0);
+			} else {
+				HOFS = 0;
+				VOFS += 1;
+			}
+		} else if (RAM[48128] == 8) {
+			if (HOFS == 0 && VOFS == 0) {
+				// Break
+			} else if (VOFS != 0 && HOFS == 0) {
+				VOFS -= 1;
+				HOFS = 40;
+			} else {
+				HOFS -= 1;
+			}
+			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = "";
+		} else {
+			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(RAM[48128]);
+			if (VOFS >= 24) {
+				TTYScrollUp(1);
+			} else if (HOFS == 40) {
+				HOFS = 0;
+				VOFS += 1;
+			}
+			HOFS += 1;
 		}
-		HOFS += 1;
 	}
 	for (var i = 0; i < 1000; i++) {
 		// Set Text Color
