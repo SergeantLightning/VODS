@@ -12,7 +12,7 @@
 
 - Monitor Foreground color value is at address 0xBFE8
 - Background color value is at 0xBFE9.
-- Display mode at 0xFFD (0 = Teletype, 1 = Full control)
+- Display mode at 0xBFFD (0 = Teletype, 1 = Full control)
 - Last pressed key at 0xBFFE
 - Serial Port at 0xBFFF
 
