@@ -11,6 +11,10 @@ var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal
 var RAM = [];                     // Mapped to addresses 0 - 65535, Keyboard Last Pressed Key Mapped to address 49150, Serial Port Data Mapped to address 49151
 var COLSET = ["#000", "#F00", "#0F0", "#FF0", "#00F", "#F0F", "#0FF", "@FFF"];
 
+// Teletype mode variables
+var HOFS = 0;
+var VOFS = 0;
+
 // Speed emulation variables
 
 let lastTime = performance.now();
@@ -64,14 +68,26 @@ function updateFlagsByRAM(addr) {
 
 function updateScreen() {
 	// Update Characters
+	if (RAM[49129] == 1) {
+		for (var i = 0; i < 1000; i++) {
+			document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
+		}
+	} else {
+		document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(RAM[48128]);
+		if (VOFS >= 25) {
+			console.log("Teletype Overflow");
+		} else if (HOFS == 40) {
+			HOFS = 0;
+			VOFS += 1;
+		}
+		HOFS += 1;
+	}
 	for (var i = 0; i < 1000; i++) {
-		document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
-
 		// Set Text Color
 		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(RAM[49128])];
 
 		// Set BG Color
-		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(RAM[49128])];
+		document.getElementsByClassName("pixel")[i].style.backgroundColor = COLSET[Number(RAM[49129])];
 	}
 }
 
@@ -107,6 +123,9 @@ function reset() {
 	}
 	RAM[49128] = 7;
 	RAM[49150] = 0;
+	RAM[49149] = 0; // Default to teletype mode
+	HOFS = 0;
+	VOFS = 0;
 	var file = document.getElementById("img").files[0];
 	if (file) {
 		const reader = new FileReader();        
@@ -151,9 +170,8 @@ function reset() {
 
 function run() {
 	const currentTime = performance.now();
-    const deltaTime = currentTime - lastTime;
+	const deltaTime = currentTime - lastTime;
 	if (deltaTime >= timeStep) {
-		// Run your emulation logic here
 		lastTime = currentTime - (deltaTime % timeStep);
 	/*
 	
@@ -215,7 +233,29 @@ function run() {
 		A = parseInt(RAM[memAddr + Y], 16);
 		PC += 1;
 		updateFlagsByReg("A");
-	}
+	}/* else if (byte == "a1") { // Indexed Indirect
+		PC += 1;
+		var temp = RAM[PC];
+		temp = parseInt(temp, 16);
+		temp += X;
+		console.log("ZP address: " + temp);
+		var target = "" + RAM[temp + 1] + RAM[temp];
+		console.log("L = " + RAM[temp] + " H = " + RAM[temp + 1]);
+		console.log("Raw Target address: " + target);
+		target = parseInt(target, 16);
+		console.log("Target address: " + target);
+		A = parseInt(RAM[target], 16);
+	} else if (byte == "b1") { // Indirect Indexed
+		PC += 1;
+		var temp = "" + RAM[PC + 1] + RAM[PC];
+		temp = parseInt(temp, 16);
+		console.log("Target address location: " + temp);
+		var target = "" + RAM[temp + 1] + RAM[temp];
+		target = parseInt(target, 16);
+		target += Y;
+		console.log("Target address: " + target);
+		A = RAM[Number(target)];
+	}*/
 	
 	/*
 	
@@ -311,7 +351,7 @@ function run() {
 
 	else if (byte == "85") { // Store to ZP
 		PC += 1;
-		RAM[parseInt(RAM[PC], 16)] = A;
+		RAM[parseInt(RAM[PC], 16)] = A.toString(16);
 	} else if (byte == "95") { // Store to ZP,X
 		PC += 1;
 		var addr = (parseInt(RAM[PC], 16)) + X;
@@ -325,7 +365,9 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr] = A;
 		PC += 1;
-		updateScreen();
+		if (memAddr >= 48128 && memAddr <= 49129) {
+			updateScreen();
+		}
 	}  else if (byte == "9d") { // Store to Addr,X
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -335,7 +377,9 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr + X] = A;
 		PC += 1;
-		updateScreen();
+		if (memAddr >= 48128 && memAddr <= 49129) {
+			updateScreen();
+		}
 	} else if (byte == "99") { // Store to Addr,Y
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -345,7 +389,9 @@ function run() {
 		console.log("Using decimal memory address: " + memAddr);
 		RAM[memAddr + Y] = A;
 		PC += 1;
-		updateScreen();
+		if (memAddr >= 48128 && memAddr <= 49129) {
+			updateScreen();
+		}
 	}
 
 	/*
