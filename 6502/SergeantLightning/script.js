@@ -281,14 +281,16 @@ function run() {
 		A = parseInt(RAM[target], 16);
 	} else if (byte == "b1") { // Indirect Indexed
 		PC += 1;
-		var temp = "" + RAM[PC + 1] + RAM[PC];
+		var temp = RAM[PC];
 		temp = parseInt(temp, 16);
-		console.log("Target address location: " + temp);
-		var target = "" + RAM[temp + 1] + RAM[temp];
+		console.log("ZP address: " + temp);
+		var target = RAM[temp + 1].toString(10).padStart(2, "0") + RAM[temp].toString(10).padStart(2, "0");
+		console.log("L = " + RAM[temp] + " H = " + RAM[temp + 1]);
+		console.log("Raw Target address: " + target);
 		target = parseInt(target, 16);
 		target += Y;
 		console.log("Target address: " + target);
-		A = RAM[Number(target)];
+		A = parseInt(RAM[target], 16);
 	}
 	
 	/*
@@ -518,7 +520,7 @@ function run() {
 	*/
 
 	else if (byte == "98") {
-		Y = A;
+		A = Y;
 		updateFlagsByReg("A");
 	}
 
