@@ -241,39 +241,39 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = parseInt(RAM[memAddr], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = parseInt(RAM[target], 16);
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "bd") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = parseInt(RAM[memAddr + X], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = parseInt(RAM[target + X], 16);
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "b9") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = parseInt(RAM[memAddr + Y], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = parseInt(RAM[target + Y], 16);
 		PC += 1;
 		updateFlagsByReg("A");
-	}/* else if (byte == "a1") { // Indexed Indirect
+	} else if (byte == "a1") { // Indexed Indirect
 		PC += 1;
 		var temp = RAM[PC];
 		temp = parseInt(temp, 16);
 		temp += X;
 		console.log("ZP address: " + temp);
-		var target = "" + RAM[temp + 1] + RAM[temp];
+		var target = RAM[temp + 1].toString(10).padStart(2, "0") + RAM[temp].toString(10).padStart(2, "0");
 		console.log("L = " + RAM[temp] + " H = " + RAM[temp + 1]);
 		console.log("Raw Target address: " + target);
 		target = parseInt(target, 16);
@@ -289,7 +289,7 @@ function run() {
 		target += Y;
 		console.log("Target address: " + target);
 		A = RAM[Number(target)];
-	}*/
+	}
 	
 	/*
 	
@@ -316,20 +316,20 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		X = parseInt(RAM[memAddr], 16);;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		X = parseInt(RAM[target], 16);;
 		PC += 1;
 		updateFlagsByReg("X");
 	} else if (byte == "be") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		X = parseInt(RAM[memAddr + Y], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		X = parseInt(RAM[target + Y], 16);
 		PC += 1;
 		updateFlagsByReg("X");
 	}
@@ -359,20 +359,20 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		Y = parseInt(RAM[memAddr], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		Y = parseInt(RAM[target], 16);
 		PC += 1;
 		updateFlagsByReg("Y");
 	} else if (byte == "bc") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		Y = parseInt(RAM[memAddr + X], 16);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		Y = parseInt(RAM[target + X], 16);
 		PC += 1;
 		updateFlagsByReg("Y");
 	}
@@ -394,36 +394,36 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] = A;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target] = A;
 		PC += 1;
-		if (memAddr >= 48128 && memAddr <= 49129) {
+		if (target >= 48128 && target <= 49129) {
 			updateScreen();
 		}
 	}  else if (byte == "9d") { // Store to Addr,X
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr + X] = A;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target + X] = A;
 		PC += 1;
-		if (memAddr >= 48128 && memAddr <= 49129) {
+		if (target >= 48128 && target <= 49129) {
 			updateScreen();
 		}
 	} else if (byte == "99") { // Store to Addr,Y
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr + Y] = A;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target + Y] = A;
 		PC += 1;
-		if (memAddr >= 48128 && memAddr <= 49129) {
+		if (target >= 48128 && target <= 49129) {
 			updateScreen();
 		}
 	}
@@ -445,10 +445,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] = X;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target] = X;
 		PC += 1;
 		updateScreen();
 	}
@@ -470,10 +470,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] = Y;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target] = Y;
 		PC += 1;
 		updateScreen();
 	}
@@ -712,30 +712,30 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A & RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A & RAM[target];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "3d") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A & RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A & RAM[(target + X)];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "39") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A & RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A & RAM[(target + Y)];
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -765,30 +765,30 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A ^ RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A ^ RAM[target];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "5d") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A ^ RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A ^ RAM[(target + X)];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "59") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A ^ RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A ^ RAM[(target + Y)];
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -818,30 +818,30 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A | RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A | RAM[target];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "1d") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A | RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A | RAM[(target + X)];
 		PC += 1;
 		updateFlagsByReg("A");
 	} else if (byte == "19") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A = A | RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A = A | RAM[(target + Y)];
 		PC += 1;
 		updateFlagsByReg("A");
 	}
@@ -863,9 +863,9 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
 		var temp = A;
 		temp = temp & Q;
 		(temp > 0) ? (F[1] = 0) : (F[1] = 1);
@@ -918,10 +918,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A += RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A += RAM[target];
 		A += F[0];
 		PC += 1;
 		updateFlagsByReg("A");
@@ -933,10 +933,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A += RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A += RAM[(target + X)];
 		A += F[0];
 		PC += 1;
 		updateFlagsByReg("A");
@@ -948,10 +948,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A += RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A += RAM[(target + Y)];
 		A += F[0];
 		PC += 1;
 		updateFlagsByReg("A");
@@ -1013,10 +1013,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A -= RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A -= RAM[target];
 		if (F[0] = 0) {
 			A -= 1;
 		}
@@ -1032,10 +1032,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A -= RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A -= RAM[(target + X)];
 		if (F[0] = 0) {
 			A -= 1;
 		}
@@ -1051,10 +1051,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		A -= RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		A -= RAM[(target + Y)];
 		if (F[0] = 0) {
 			A -= 1;
 		}
@@ -1111,10 +1111,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target];
 		PC += 1;
 		if (A >= temp) {
 			F[0] = 1; // Set carry flag
@@ -1127,10 +1127,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[(memAddr + X)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[(target + X)];
 		if (A >= temp) {
 			F[0] = 1; // Set carry flag
 		} else {
@@ -1144,10 +1144,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[(memAddr + Y)];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[(target + Y)];
 		if (A >= temp) {
 			F[0] = 1; // Set carry flag
 		} else {
@@ -1190,10 +1190,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target];
 		PC += 1;
 		if (X >= temp) {
 			F[0] = 1; // Set carry flag
@@ -1235,10 +1235,10 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr];
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target];
 		PC += 1;
 		if (X >= temp) {
 			F[0] = 1; // Set carry flag
@@ -1276,26 +1276,26 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		if (RAM[memAddr] == 255) {
-			RAM[memAddr] = 0;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		if (RAM[target] == 255) {
+			RAM[target] = 0;
 		} else {
-			RAM[memAddr] += 1;
+			RAM[target] += 1;
 		}
 		PC += 1;
 	} else if (byte == "fe") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		if (RAM[memAddr] == 255) {
-			RAM[memAddr] = 0;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		if (RAM[target] == 255) {
+			RAM[target] = 0;
 		} else {
-			RAM[memAddr] += 1;
+			RAM[target] += 1;
 		}
 		PC += 1;
 		updateFlagsByReg("A");
@@ -1360,13 +1360,13 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		if (RAM[memAddr] == 0) {
-			RAM[memAddr] = 255;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		if (RAM[target] == 0) {
+			RAM[target] = 255;
 		} else {
-			RAM[memAddr] -= 1;
+			RAM[target] -= 1;
 		}
 		updateFlagsByReg("A");
 		PC += 1;
@@ -1374,14 +1374,14 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		if (RAM[memAddr] == 0) {
-			RAM[memAddr] = 255;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		if (RAM[target] == 0) {
+			RAM[target] = 255;
 		} else {
-			RAM[memAddr] -= 1;
+			RAM[target] -= 1;
 		}
 		PC += 1;
 		updateFlagsByReg("A");
@@ -1462,37 +1462,37 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] *= 2;
-		if (RAM[memAddr] < 255) {
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
 			F[0] = 0;
 		} else {
 			var mask = 255;
-			RAM[memAddr] = RAM[memAddr] & mask;
+			RAM[target] = RAM[target] & mask;
 			F[0] = 1;
 		}
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	} else if (byte == "1e") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		RAM[memAddr] *= 2;
-		if (RAM[memAddr] < 255) {
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
 			F[0] = 0;
 		} else {
 			var mask = 255;
-			RAM[memAddr] = RAM[memAddr] & mask;
+			RAM[target] = RAM[target] & mask;
 			F[0] = 1;
 		}
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	}
 
 	/*
@@ -1531,31 +1531,31 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		F[0] = Number(RAM[memAddr].toString(2).padStart(8, "0").charAt(7));
-		RAM[memAddr] /= 2;
-		if (RAM[memAddr] < 0) {
-			RAM[memAddr] = 0;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		F[0] = Number(RAM[target].toString(2).padStart(8, "0").charAt(7));
+		RAM[target] /= 2;
+		if (RAM[target] < 0) {
+			RAM[target] = 0;
 		}
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	} else if (byte == "5e") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		F[0] = Number(RAM[memAddr].toString(2).padStart(8, "0").charAt(7));
-		RAM[memAddr] /= 2;
-		if (RAM[memAddr] < 0) {
-			RAM[memAddr] = 0;
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		F[0] = Number(RAM[target].toString(2).padStart(8, "0").charAt(7));
+		RAM[target] /= 2;
+		if (RAM[target] < 0) {
+			RAM[target] = 0;
 		}
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	}
 
 	/*
@@ -1612,43 +1612,43 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target].toString(2).padStart(8, "0");
 		temp = Number(temp.charAt(0)); // New carry flag value
-		RAM[memAddr] *= 2;
-		if (RAM[memAddr] < 255) {
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
 			//
 		} else {
 			var mask = 255;
-			RAM[memAddr] = RAM[memAddr] & mask;
+			RAM[target] = RAM[target] & mask;
 		}
-		(F[0] == 1) ? (RAM[memAddr] += 1) : (RAM[memAddr] += 0);
+		(F[0] == 1) ? (RAM[target] += 1) : (RAM[target] += 0);
 		F[0] = temp;
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	} else if (byte == "3e") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target].toString(2).padStart(8, "0");
 		temp = Number(temp.charAt(0)); // New carry flag value
-		RAM[memAddr] *= 2;
-		if (RAM[memAddr] < 255) {
+		RAM[target] *= 2;
+		if (RAM[target] < 255) {
 			//
 		} else {
 			var mask = 255;
-			RAM[memAddr] = RAM[memAddr] & mask;
+			RAM[target] = RAM[target] & mask;
 		}
-		(F[0] == 1) ? (RAM[memAddr] += 1) : (RAM[memAddr] += 0);
+		(F[0] == 1) ? (RAM[target] += 1) : (RAM[target] += 0);
 		F[0] = temp;
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	}
 
 	/*
@@ -1696,37 +1696,37 @@ function run() {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target].toString(2).padStart(8, "0");
 		temp = Number(temp.charAt(7)); // New carry flag value
-		RAM[memAddr] /= 2;
-		if (RAM[memAddr] < 1) {
-			RAM[memAddr] = 0;
+		RAM[target] /= 2;
+		if (RAM[target] < 1) {
+			RAM[target] = 0;
 		}
-		(F[0] == 1) ? (RAM[memAddr] += 128) : (RAM[memAddr] += 0);
+		(F[0] == 1) ? (RAM[target] += 128) : (RAM[target] += 0);
 		F[0] = temp;
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	} else if (byte == "7e") {
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
 		console.log("Using hex memory address: " + Q);
-		var memAddr = parseInt(Q, 16);
-		memAddr = Number(memAddr);
-		memAddr += X;
-		console.log("Using decimal memory address: " + memAddr);
-		var temp = RAM[memAddr].toString(2).padStart(8, "0");
+		var target = parseInt(Q, 16);
+		target = Number(target);
+		target += X;
+		console.log("Using decimal memory address: " + target);
+		var temp = RAM[target].toString(2).padStart(8, "0");
 		temp = Number(temp.charAt(7)); // New carry flag value
-		RAM[memAddr] /= 2;
-		if (RAM[memAddr] < 1) {
-			RAM[memAddr] = 0;
+		RAM[target] /= 2;
+		if (RAM[target] < 1) {
+			RAM[target] = 0;
 		}
-		(F[0] == 1) ? (RAM[memAddr] += 128) : (RAM[memAddr] += 0);
+		(F[0] == 1) ? (RAM[target] += 128) : (RAM[target] += 0);
 		F[0] = temp;
 		PC += 1;
-		updateFlagsByRAM(memAddr);
+		updateFlagsByRAM(target);
 	}
 
 	/*
