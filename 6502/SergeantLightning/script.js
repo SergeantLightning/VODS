@@ -1411,10 +1411,10 @@ function run() {
 	*/
 
 	else if (byte == "88") {
-		if (X == 0) {
-			X = 255;
+		if (Y == 0) {
+			Y = 255;
 		} else {
-			X -= 1;
+			Y -= 1;
 		}
 		updateFlagsByReg("Y");
 	}
