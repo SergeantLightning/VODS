@@ -84,10 +84,10 @@ function updateScreen() {
 	// Update Characters
 	if (RAM[49129] == 1) {
 		for (var i = 0; i < 1000; i++) {
-			document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(RAM[48128 + i]);
+			document.getElementsByClassName("pixel")[i].innerHTML = String.fromCharCode(parseInt(RAM[48128 + i], 16));
 		}
 	} else { // Teletype mode
-		if (RAM[48128] == 13) {
+		if (RAM[48128] == "0D" || RAM[48128] == "0d") {
 			console.log("Detected Enter");
 			if (VOFS == 24) {
 				TTYScrollUp(0);
@@ -95,7 +95,7 @@ function updateScreen() {
 				HOFS = 0;
 				VOFS += 1;
 			}
-		} else if (RAM[48128] == 8) {
+		} else if (RAM[48128] == "08" || RAM[48128] == "8") {
 			if (HOFS == 0 && VOFS == 0) {
 				// Break
 			} else if (VOFS != 0 && HOFS == 0) {
@@ -106,7 +106,7 @@ function updateScreen() {
 			}
 			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = "";
 		} else {
-			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(RAM[48128]);
+			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(parseInt(RAM[48128], 16));
 			if (VOFS >= 24) {
 				TTYScrollUp(1);
 			} else if (HOFS == 40) {
@@ -118,19 +118,19 @@ function updateScreen() {
 	}
 	for (var i = 0; i < 1000; i++) {
 		// Set Text Color
-		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(RAM[49128])];
+		document.getElementsByClassName("pixel")[i].style.color = COLSET[Number(parseInt(RAM[49128], 16))];
 
 		// Set BG Color
-		document.getElementsByClassName("pixel")[i].style.backgroundColor = COLSET[Number(RAM[49129])];
+		document.getElementsByClassName("pixel")[i].style.backgroundColor = COLSET[Number(parseInt(RAM[49129], 16))];
 	}
 }
 
 window.onkeydown = function(event) {
 	let keycode = event.key;
 	if (keycode == "Backspace") {
-		RAM[49150] = 8;
+		RAM[49150] = "08";
 	} else if (keycode == "Enter") {
-		RAM[49150] = "d"; // Hex version of decimal 13
+		RAM[49150] = "0d"; // Hex version of decimal 13
 	} else if (keycode == "Shift") {
 		//
 	} else {
@@ -387,11 +387,11 @@ function run() {
 
 	else if (byte == "85") { // Store to ZP
 		PC += 1;
-		RAM[parseInt(RAM[PC], 16)] = A.toString(16);
+		RAM[parseInt(RAM[PC], 16)] = A.toString(16).padStart(2, "0");
 	} else if (byte == "95") { // Store to ZP,X
 		PC += 1;
 		var addr = (parseInt(RAM[PC], 16)) + X;
-		RAM[addr] = A;
+		RAM[addr] = A.toString(16).padStart(2, "0");
 	}  else if (byte == "8d") { // Store to Addr
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -399,7 +399,7 @@ function run() {
 		var target = parseInt(Q, 16);
 		target = Number(target);
 		console.log("Using decimal memory address: " + target);
-		RAM[target] = A;
+		RAM[target] = A.toString(16).padStart(2, "0");
 		PC += 1;
 		if (target >= 48128 && target <= 49129) {
 			updateScreen();
@@ -411,7 +411,7 @@ function run() {
 		var target = parseInt(Q, 16);
 		target = Number(target);
 		console.log("Using decimal memory address: " + target);
-		RAM[target + X] = A;
+		RAM[target + X] = A.toString(16).padStart(2, "0");
 		PC += 1;
 		if (target >= 48128 && target <= 49129) {
 			updateScreen();
@@ -423,11 +423,35 @@ function run() {
 		var target = parseInt(Q, 16);
 		target = Number(target);
 		console.log("Using decimal memory address: " + target);
-		RAM[target + Y] = A;
+		RAM[target + Y] = A.toString(16).padStart(2, "0");
 		PC += 1;
 		if (target >= 48128 && target <= 49129) {
 			updateScreen();
 		}
+	} else if (byte == "81") { // Indexed Indirect
+		PC += 1;
+		var temp = RAM[PC];
+		temp = parseInt(temp, 16);
+		temp += X;
+		console.log("ZP address: " + temp);
+		var target = RAM[temp + 1].toString(10).padStart(2, "0") + RAM[temp].toString(10).padStart(2, "0");
+		console.log("L = " + RAM[temp] + " H = " + RAM[temp + 1]);
+		console.log("Raw Target address: " + target);
+		target = parseInt(target, 16);
+		console.log("Target address: " + target);
+		RAM[target] = A.toString(16).padStart(2, "0");
+	} else if (byte == "91") { // Indirect Indexed
+		PC += 1;
+		var temp = RAM[PC];
+		temp = parseInt(temp, 16);
+		console.log("ZP address: " + temp);
+		var target = RAM[temp + 1].toString(10).padStart(2, "0") + RAM[temp].toString(10).padStart(2, "0");
+		console.log("L = " + RAM[temp] + " H = " + RAM[temp + 1]);
+		console.log("Raw Target address: " + target);
+		target = parseInt(target, 16);
+		target += Y;
+		console.log("Target address: " + target);
+		RAM[target] = A.toString(16).padStart(2, "0");
 	}
 
 	/*
@@ -438,11 +462,11 @@ function run() {
 
 	else if (byte == "86") { // Store to ZP
 		PC += 1;
-		RAM[parseInt(RAM[PC], 16)] = X;
+		RAM[parseInt(RAM[PC], 16)] = X.toString(16).padStart(2, "0");
 	} else if (byte == "96") { // Store to ZP,Y
 		PC += 1;
 		var addr = (parseInt(RAM[PC], 16)) + Y;
-		RAM[addr] = X;
+		RAM[addr] = X.toString(16).padStart(2, "0");
 	}  else if (byte == "8e") { // Store to Addr
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -450,7 +474,7 @@ function run() {
 		var target = parseInt(Q, 16);
 		target = Number(target);
 		console.log("Using decimal memory address: " + target);
-		RAM[target] = X;
+		RAM[target] = X.toString(16).padStart(2, "0");
 		PC += 1;
 		updateScreen();
 	}
@@ -463,11 +487,11 @@ function run() {
 
 	else if (byte == "84") { // Store to ZP
 		PC += 1;
-		RAM[parseInt(RAM[PC], 16)] = Y;
+		RAM[parseInt(RAM[PC], 16)] = Y.toString(16).padStart(2, "0");
 	} else if (byte == "94") { // Store to ZP,X
 		PC += 1;
 		var addr = (parseInt(RAM[PC], 16)) + X;
-		RAM[addr] = Y;
+		RAM[addr] = Y.toString(16).padStart(2, "0");
 	}  else if (byte == "8c") { // Store to Addr
 		PC += 1;
 		var Q = "" + RAM[PC + 1] + RAM[PC];
@@ -475,7 +499,7 @@ function run() {
 		var target = parseInt(Q, 16);
 		target = Number(target);
 		console.log("Using decimal memory address: " + target);
-		RAM[target] = Y;
+		RAM[target] = Y.toString(16).padStart(2, "0");
 		PC += 1;
 		updateScreen();
 	}
