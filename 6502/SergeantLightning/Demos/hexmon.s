@@ -18,21 +18,13 @@ RESET:
 	LDY #0		; Set up buffer index
 	STY KBIN	; Clear keyboard input
 	STY SCRMD	; Teletype Mode
+	STY RPTR	; Set up read start
 	INY
 	STY OPFLAGS	; Default to read mode
 	DEY
 BOOTMSG:
-	LDA welcome,Y
-	CMP #0
-	BEQ MSGDONE
-	STA $BC00
-	INY
-	JMP BOOTMSG
-MSGDONE:
-	LDA #13		; CR
+	LDA #'>'	; Ready symbol
 	STA $BC00	; Output it
-	LDA #'>'
-	STA $BC00
 	LDY #0
 GETKEY:
 	LDA KBIN
@@ -53,21 +45,58 @@ GETKEY:
 GO:
 	LDA #13
 	STA $BC00
+	STA IN,Y
 	; Processing code goes here
+	LDA OPFLAGS
+	CMP #0		; Write?
+	BEQ WRITE	; Yes
+	CMP #1		; Read?
+	BEQ READ	; Yes
+	CMP #2		; Block Read?
+	BEQ BLOCKREAD	; Yes
+	JMP OPDONE	; Invalid operation
+READ:
+	PHY		; Save End of input
+	LDY RPTR
+RLOOP:
+	LDA IN,Y	; Load first character
+	CMP #13		; End of input?
+	BEQ OPDONE
+	CMP #'0'	; Invalid character?
+	BCC OPDONE	; Yes
+	CMP #'A'	; Letter?
+	BCS LETTER	; Yes, fall through if digit
+	CMP #":"	; Invalid character?
+	BCS OPDONE	; Yes
+LETTER:
+	STA $BC00
+	INY
+	JMP RLOOP
+BLOCKREAD:
+	PHY
+	JMP OPDONE
+WRITE:
+	PHY
+	JMP OPDONE
+OPDONE:
+	PLY
+	LDA #1
+	STA OPFLAGS
 	STY RPTR
+	LDA #13
+	STA $BC00
+	STA $BC00
 	LDA #'>'
 	STA $BC00
 	JMP DONE
 SETBLOCK:
 	STA $BC00
-	LDA OPFLAGS
-	ORA #2
+	LDA #2
 	STA OPFLAGS
 	JMP DONE
 SETW:
 	STA $BC00
-	LDA OPFLAGS
-	AND #0
+	LDA #0
 	STA OPFLAGS
 	JMP DONE
 BKSP:
@@ -77,8 +106,6 @@ DONE:
 	LDA #0
 	STA KBIN
 	JMP GETKEY
-
-welcome: .asciiz "Hexmon"
 
 	.org $FFFC
 	.word $C000
