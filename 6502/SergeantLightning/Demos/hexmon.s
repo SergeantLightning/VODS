@@ -12,6 +12,14 @@ KBIN    = $BFFE ; Keyboard Input
 
 	.org $C000
 
+JSETBLOCK:
+	JMP SETBLOCK
+JSETW:
+	JMP SETW
+JBKSP:
+	JMP BKSP
+JDONE:
+	JMP DONE
 RESET:
 	CLD		; Clear decimal arithmetic mode.
 	SEI		; No interrupts
@@ -33,19 +41,20 @@ GETKEY:
 	CMP #13         ; CR?
 	BEQ GO		; Yes
 	CMP #'.'	; Dot?
-	BEQ SETBLOCK	; Yes
+	BEQ JSETBLOCK	; Yes
 	CMP #':'	; Colon?
-	BEQ SETW	; Yes
+	BEQ JSETW	; Yes
 	CMP #8		; Backspace?
-	BEQ BKSP	; Yes
+	BEQ JBKSP	; Yes
 	STA IN,Y	; Store key
 	INY
 	STA $BC00	; Output key
-	JMP DONE
+	JMP JDONE
 GO:
 	LDA #13
 	STA $BC00
 	STA IN,Y
+	INY
 	; Processing code goes here
 	LDA OPFLAGS
 	CMP #0		; Write?
@@ -61,17 +70,50 @@ READ:
 RLOOP:
 	LDA IN,Y	; Load first character
 	CMP #13		; End of input?
-	BEQ OPDONE
+	BEQ PARSEDONE	; Yes
 	CMP #'0'	; Invalid character?
 	BCC OPDONE	; Yes
 	CMP #'A'	; Letter?
 	BCS LETTER	; Yes, fall through if digit
 	CMP #":"	; Invalid character?
 	BCS OPDONE	; Yes
-LETTER:
+	; Digit Parsing
 	STA $BC00
+	JSR SHIFTSTART	
+	SEC
+	SBC #48
+	ORA SL
+	STA SL
 	INY
 	JMP RLOOP
+LETTER:
+	STA $BC00
+	JSR SHIFTSTART
+	SEC
+	SBC #55
+	ORA SL
+	STA SL
+	INY
+	JMP RLOOP
+PARSEDONE:
+	LDA #':'
+	STA $BC00
+	LDX #0
+	LDA (SL,X)
+	PHA
+	AND #$F0	; Save High Byte
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	JSR PARSEBYTE
+	STA $BC00
+	PLA
+	AND #$0F	; Save Low Byte
+	JSR PARSEBYTE
+	STA $BC00
+	JMP OPDONE
+
 BLOCKREAD:
 	PHY
 	JMP OPDONE
@@ -79,9 +121,14 @@ WRITE:
 	PHY
 	JMP OPDONE
 OPDONE:
+	LDY #1
+	STY OPFLAGS
+	DEY
+	STY SL
+	STY SH
+	STY EL
+	STY EH
 	PLY
-	LDA #1
-	STA OPFLAGS
 	STY RPTR
 	LDA #13
 	STA $BC00
@@ -105,8 +152,37 @@ BKSP:
 DONE:
 	LDA #0
 	STA KBIN
+	STA SL
+	STA SH
 	JMP GETKEY
 
+; SUBROUTINES
+
+SHIFTSTART:
+	PHX
+	LDX #4
+SSLOOP:
+	CPX #0
+	BEQ SSDONE
+	ASL SL
+	ROL SH
+	DEX
+	JMP SSLOOP
+SSDONE:
+	PLX
+	RTS
+
+PARSEBYTE:
+	CMP #10		; 0-9?
+	BCC PARSEDIG	; Yes, fall through if no
+	CLC
+	ADC #87
+	RTS
+PARSEDIG:
+	CLC
+	ADC #48
+	RTS
+
 	.org $FFFC
-	.word $C000
+	.word RESET
 	.word $0
