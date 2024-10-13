@@ -1287,7 +1287,9 @@ function run() {
 		if (RAM[target] == 255) {
 			RAM[target] = 0;
 		} else {
-			RAM[target] += 1;
+			var temp = Number(RAM[target].toString(10));
+			temp += 1;
+			RAM[target] = temp;
 		}
 	} else if (byte == "f6") {
 		PC += 1;
@@ -1296,7 +1298,9 @@ function run() {
 		if (RAM[target] == 255) {
 			RAM[target] = 0;
 		} else {
-			RAM[target] += 1;
+			var temp = Number(RAM[target].toString(10));
+			temp += 1;
+			RAM[target] = temp;
 		}
 	} else if (byte == "ee") {
 		PC += 1;
@@ -1308,7 +1312,9 @@ function run() {
 		if (RAM[target] == 255) {
 			RAM[target] = 0;
 		} else {
-			RAM[target] += 1;
+			var temp = Number(RAM[target].toString(10));
+			temp += 1;
+			RAM[target] = temp;
 		}
 		PC += 1;
 	} else if (byte == "fe") {
@@ -1321,7 +1327,9 @@ function run() {
 		if (RAM[target] == 255) {
 			RAM[target] = 0;
 		} else {
-			RAM[target] += 1;
+			var temp = Number(RAM[target].toString(10));
+			temp += 1;
+			RAM[target] = temp;
 		}
 		PC += 1;
 		updateFlagsByReg("A");
@@ -1369,7 +1377,9 @@ function run() {
 		if (RAM[target] == 0) {
 			RAM[target] = 255;
 		} else {
-			RAM[target] -= 1;
+			var temp = Number(RAM[target].toString(10));
+			temp -= 1;
+			RAM[target] = temp;
 		}
 		updateFlagsByReg("A");
 	} else if (byte == "e6") {
@@ -1379,7 +1389,9 @@ function run() {
 		if (RAM[target] == 0) {
 			RAM[target] = 255;
 		} else {
-			RAM[target] -= 1;
+			var temp = Number(RAM[target].toString(10));
+			temp -= 1;
+			RAM[target] = temp;
 		}
 		updateFlagsByReg("A");
 	} else if (byte == "ce") {
@@ -1392,7 +1404,9 @@ function run() {
 		if (RAM[target] == 0) {
 			RAM[target] = 255;
 		} else {
-			RAM[target] -= 1;
+			var temp = Number(RAM[target].toString(10));
+			temp -= 1;
+			RAM[target] = temp;
 		}
 		updateFlagsByReg("A");
 		PC += 1;
@@ -1407,7 +1421,9 @@ function run() {
 		if (RAM[target] == 0) {
 			RAM[target] = 255;
 		} else {
-			RAM[target] -= 1;
+			var temp = Number(RAM[target].toString(10));
+			temp -= 1;
+			RAM[target] = temp;
 		}
 		PC += 1;
 		updateFlagsByReg("A");
