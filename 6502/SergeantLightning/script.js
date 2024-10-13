@@ -9,7 +9,7 @@ var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal
 
 // Memory
 var RAM = [];                     // Mapped to addresses 0 - 65535, Keyboard Last Pressed Key Mapped to address 49150, Serial Port Data Mapped to address 49151
-var COLSET = ["#000", "#F00", "#0F0", "#FF0", "#00F", "#F0F", "#0FF", "@FFF"];
+var COLSET = ["#000", "#F00", "#0F0", "#FF0", "#00F", "#F0F", "#0FF", "#FFF"];
 
 // Teletype mode variables
 var HOFS = 0;
