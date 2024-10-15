@@ -1,4 +1,4 @@
-# SergeantLightning's 6502 Machine Emulator
+# (VERSION 2 IN DEVELOPMENT) SergeantLightning's 6502 Machine Emulator
 
 ## Important References
 
