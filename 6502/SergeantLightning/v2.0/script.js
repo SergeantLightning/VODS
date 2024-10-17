@@ -487,6 +487,198 @@ function run() {
 			PC[0] += 1;
 		}
 
+		/*
+
+			BCC
+
+		*/
+
+		else if (hexbyte == "90") {
+			PC[0] += 1;
+			console.log("BCC");
+			if (F[0] == 0) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BCS
+
+		*/
+
+		else if (hexbyte == "b0") {
+			PC[0] += 1;
+			console.log("BCS");
+			if (F[0] == 1) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BEQ
+
+		*/
+
+		else if (hexbyte == "f0") {
+			PC[0] += 1;
+			console.log("BEQ");
+			if (F[1] == 1) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BIT Varients coming soon...
+
+		*/
+
+		
+		/*
+
+			BMI
+
+		*/
+
+		else if (hexbyte == "30") {
+			PC[0] += 1;
+			console.log("BMI");
+			if (F[7] == 1) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+
+		/*
+
+			BNE
+
+		*/
+
+		else if (hexbyte == "d0") {
+			PC[0] += 1;
+			console.log("BNE");
+			if (F[1] == 0) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BPL
+
+		*/
+
+		else if (hexbyte == "10") {
+			PC[0] += 1;
+			console.log("BPL");
+			if (F[7] == 0) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BRA
+
+		*/
+
+		else if (hexbyte == "80") {
+			PC[0] += 1;
+			console.log("BRA");
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		}
+
+		/*
+
+			BVC
+
+		*/
+
+		else if (hexbyte == "50") {
+			PC[0] += 1;
+			console.log("BVC");
+			if (F[6] == 0) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			BVS
+
+		*/
+
+		else if (hexbyte == "70") {
+			PC[0] += 1;
+			console.log("BVS");
+			if (F[6] == 1) {
+				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			} else {
+				// Do nothing
+			}
+		}
+
+		/*
+
+			CLC
+
+		*/
+
+		else if (hexbyte == "18") {
+			console.log("CLC");
+			F[0] = 0;
+		}
+
+		/*
+
+			CLD
+
+		*/
+
+		else if (hexbyte == "d8") {
+			console.log("CLD");
+			F[3] = 0;
+		}
+
+		/*
+
+			CLI
+
+		*/
+
+		else if (hexbyte == "58") {
+			console.log("CLI");
+			F[2] = 0;
+		}
+
+		/*
+
+			CLV
+
+		*/
+
+		else if (hexbyte == "b8") {
+			console.log("CLV");
+			F[3] = 0;
+		}
+
 		PC[0] += 1;
 		updateRegMon();
 	
