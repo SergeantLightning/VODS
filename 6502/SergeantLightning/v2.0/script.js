@@ -208,534 +208,536 @@ function reset() {
 }
 
 function run() {
-	const currentTime = performance.now();
-	const deltaTime = currentTime - lastTime;
-	if (deltaTime >= timeStep) {
-		lastTime = currentTime - (deltaTime % timeStep);
-		/*
-		
-			WARNING: SUPER LONG IF ELSE BLOCK COMING
-		
-		*/
-	
-		var byte = RAM[PC[0]];
-		var hexbyte = byte.toString(16).padStart(2, "0");
-		console.log("Reading from ROM: 0x" + hexbyte + " | " + byte);
+	/*
 
+		WARNING: SUPER LONG IF ELSE BLOCK COMING
+		
+	*/
+	
+	var byte = RAM[PC[0]];
+	var hexbyte = byte.toString(16).padStart(2, "0");
+	console.log("Reading from ROM: 0x" + hexbyte + " | " + byte);
 		// SPECIAL OPCODES
-
 		if (byte == 252) { // 0xFC
-			PC[0] += 1;
-			console.log("Dumped ZP address " + RAM[PC[0]] + ": " + RAM[RAM[PC[0]]]);
-		} else if (byte == 244) { // 0xF4
-			// Dump absolute address
-			PC[0] += 1;
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Dumped Absolute address " + memaddr + ": " + RAM[parseInt(memaddr, 16)]);
-		}
-
-		// 6502 + W65C02 OPCODES
-
-
-		/*
-
-			ADC Varients
-
-		*/
-
-		else if (hexbyte == "69") {
-			// Immediate
-			let oldA = A[0];
-			PC[0] += 1;
-			A[0] += RAM[PC[0]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0); // Update Carry Flag
-			console.log("ADC immediate");
-		} else if (hexbyte == "65") {
-			let oldA = A[0];
-			PC[0] += 1;
-			A[0] += RAM[RAM[PC[0]]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			console.log("ADC ZP");
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "75") {
-			let oldA = A[0];
-			PC[0] += 1;
-			A[0] += RAM[RAM[PC[0] + X]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			console.log("ADC ZP,X");
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "6d") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Absolute");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] += RAM[memaddr];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			PC[0] += 1;
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "7d") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Absolute,X");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] += RAM[memaddr + X[0]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			PC[0] += 1;
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "79") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Absolute,Y");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] += RAM[memaddr + Y[0]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			PC[0] += 1;
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "61") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Indexed Indirect");
-			let ZPaddr = RAM[PC[0]];
-			ZPaddr += X[0];
-			console.log(ZPaddr);
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] += RAM[parseInt(memaddr, 16)];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "71") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Indirect Indexed");
-			let ZPaddr = RAM[PC[0]];
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] += RAM[parseInt(memaddr, 16) + Y[0]];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		} else if (hexbyte == "72") {
-			let oldA = A[0];
-			PC[0] += 1;
-			console.log("ADC Indirect ZP");
-			let ZPaddr = RAM[PC[0]];
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] += RAM[parseInt(memaddr, 16)];
-			if (F[0] == 1) {
-				A[0] += 1;
-			}
-			updateFlagsByReg("A");
-			(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
-		}
-
-		/*
-
-			AND Varients
-
-		*/
-
-		else if (hexbyte == "29") {
-			// Immediate
-			PC[0] += 1;
-			A[0] &= RAM[PC[0]];
-			updateFlagsByReg("A");
-			console.log("AND immediate");
-		} else if (hexbyte == "25") {
-			PC[0] += 1;
-			A[0] &= RAM[RAM[PC[0]]];
-			console.log("AND ZP");
-			updateFlagsByReg("A");
-		} else if (hexbyte == "35") {
-			PC[0] += 1;
-			A[0] &= RAM[RAM[PC[0] + X]];
-			console.log("AND ZP,X");
-			updateFlagsByReg("A");
-		} else if (hexbyte == "2d") {
-			PC[0] += 1;
-			console.log("AND Absolute");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] &= RAM[memaddr];
-			PC[0] += 1;
-			updateFlagsByReg("A");
-		} else if (hexbyte == "3d") {
-			PC[0] += 1;
-			console.log("AND Absolute,X");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] &= RAM[memaddr + X[0]];
-			PC[0] += 1;
-			updateFlagsByReg("A");
-		} else if (hexbyte == "39") {
-			PC[0] += 1;
-			console.log("ADC Absolute,Y");
-			let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			A[0] &= RAM[memaddr + Y[0]];
-			PC[0] += 1;
-			updateFlagsByReg("A");
-		} else if (hexbyte == "21") {
-			PC[0] += 1;
-			console.log("ADC Indexed Indirect");
-			let ZPaddr = RAM[PC[0]];
-			ZPaddr += X[0];
-			console.log(ZPaddr);
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] &= RAM[parseInt(memaddr, 16)];
-			updateFlagsByReg("A");
-		} else if (hexbyte == "31") {
-			PC[0] += 1;
-			console.log("ADC Indirect Indexed");
-			let ZPaddr = RAM[PC[0]];
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] &= RAM[parseInt(memaddr, 16) + Y[0]];
-			updateFlagsByReg("A");
-		} else if (hexbyte == "32") {
-			PC[0] += 1;
-			console.log("ADC Indirect ZP");
-			let ZPaddr = RAM[PC[0]];
-			let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
-			console.log("ZP address: " + RAM[PC[0]]);
-			console.log("Indirect Address: 0x" + memaddr);
-			A[0] &= RAM[parseInt(memaddr, 16)];
-			updateFlagsByReg("A");
-		}
-
-		/*
-
-			ASL Varients
-
-		*/
-
-		else if (hexbyte == "0a") {
-			(A[0] > 127) ? (F[0] = 1) : (F[0] = 0);
-			A[0] *= 2;
-			updateFlagsByReg("A");
-			console.log("ASL A");
-		} else if (hexbyte == "06") {
-			PC[0] += 1;
-			(RAM[RAM[PC[0]]] > 127) ? (F[0] = 1) : (F[0] = 0);
-			RAM[RAM[PC[0]]] *= 2;
-			updateFlagsByRAM(RAM[RAM[PC[0]]]);
-			console.log("ASL ZP");
-		} else if (hexbyte == "16") {
-			PC[0] += 1;
-			(RAM[RAM[PC[0]] + X] > 127) ? (F[0] = 1) : (F[0] = 0);
-			RAM[RAM[PC[0]] + X] *= 2;
-			updateFlagsByRAM(RAM[RAM[PC[0]] + X]);
-			console.log("ASL ZP,X");
-		} else if (hexbyte == "0e") {
-			PC[0] += 1;
-			console.log("ASL Absolute");
-			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			(RAM[memaddr] > 127) ? (F[0] = 1) : (F[0] = 0);
-			RAM[memaddr] *= 2;
-			updateFlagsByRAM(RAM[memaddr]);
-			PC[0] += 1;
-		} else if (hexbyte == "1e") {
-			PC[0] += 1;
-			console.log("ASL Absolute");
-			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
-			console.log("Hex address: " + memaddr);
-			memaddr = parseInt(memaddr, 16);
-			(RAM[memaddr + X] > 127) ? (F[0] = 1) : (F[0] = 0);
-			RAM[memaddr + X] *= 2;
-			updateFlagsByRAM(RAM[memaddr + X]);
-			PC[0] += 1;
-		}
-
-		/*
-
-			BCC
-
-		*/
-
-		else if (hexbyte == "90") {
-			PC[0] += 1;
-			console.log("BCC");
-			if (F[0] == 0) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BCS
-
-		*/
-
-		else if (hexbyte == "b0") {
-			PC[0] += 1;
-			console.log("BCS");
-			if (F[0] == 1) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BEQ
-
-		*/
-
-		else if (hexbyte == "f0") {
-			PC[0] += 1;
-			console.log("BEQ");
-			if (F[1] == 1) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BIT Varients
-
-		*/
-
-		else if (hexbyte == "89") {
-			PC[0] += 1;
-			console.log("BIT Immediate");
-			let temp = A[0] & RAM[PC[0]];
-			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
-			(RAM[PC[0]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
-			temp = RAM[PC[0]] & 64;
-			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
-		} else if (hexbyte == "24") {
-			PC[0] += 1;
-			console.log("BIT ZP");
-			let temp = A[0] & RAM[RAM[PC[0]]];
-			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
-			(RAM[RAM[PC[0]]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
-			temp = RAM[RAM[PC[0]]] & 64;
-			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
-		} else if (hexbyte == "34") {
-			PC[0] += 1;
-			console.log("BIT ZP,X");
-			let temp = A[0] & RAM[RAM[PC[0]] + X];
-			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
-			(RAM[RAM[PC[0]] + X] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
-			temp = RAM[RAM[PC[0]] + X] & 64;
-			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
-		} else if (hexbyte == "2c") {
-			PC[0] += 1;
-			console.log("BIT Absolute");
-			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
-			memaddr = parseInt(memaddr, 16); // Convert to decimal
-			let temp = A[0] & RAM[memaddr];
-			console.log("Hex address: " + memaddr);
-			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
-			(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
-			temp = RAM[memaddr] & 64;
-			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
-		} else if (hexbyte == "3c") {
-			PC[0] += 1;
-			console.log("BIT Absolute,X");
-			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
-			memaddr = parseInt(memaddr, 16); // Convert to decimal
-			memaddr += X;
-			let temp = A[0] & RAM[memaddr];
-			console.log("Hex address: " + memaddr);
-			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
-			(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
-			temp = RAM[memaddr] & 64;
-			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
-		}
-
-		
-		/*
-
-			BMI
-
-		*/
-
-		else if (hexbyte == "30") {
-			PC[0] += 1;
-			console.log("BMI");
-			if (F[7] == 1) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-
-		/*
-
-			BNE
-
-		*/
-
-		else if (hexbyte == "d0") {
-			PC[0] += 1;
-			console.log("BNE");
-			if (F[1] == 0) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BPL
-
-		*/
-
-		else if (hexbyte == "10") {
-			PC[0] += 1;
-			console.log("BPL");
-			if (F[7] == 0) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BRA
-
-		*/
-
-		else if (hexbyte == "80") {
-			PC[0] += 1;
-			console.log("BRA");
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-		}
-
-		/*
-
-			BVC
-
-		*/
-
-		else if (hexbyte == "50") {
-			PC[0] += 1;
-			console.log("BVC");
-			if (F[6] == 0) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			BVS
-
-		*/
-
-		else if (hexbyte == "70") {
-			PC[0] += 1;
-			console.log("BVS");
-			if (F[6] == 1) {
-				(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
-			} else {
-				// Do nothing
-			}
-		}
-
-		/*
-
-			CLC
-
-		*/
-
-		else if (hexbyte == "18") {
-			console.log("CLC");
-			F[0] = 0;
-		}
-
-		/*
-
-			CLD
-
-		*/
-
-		else if (hexbyte == "d8") {
-			console.log("CLD");
-			F[3] = 0;
-		}
-
-		/*
-
-			CLI
-
-		*/
-
-		else if (hexbyte == "58") {
-			console.log("CLI");
-			F[2] = 0;
-		}
-
-		/*
-
-			CLV
-
-		*/
-
-		else if (hexbyte == "b8") {
-			console.log("CLV");
-			F[3] = 0;
-		}
-
 		PC[0] += 1;
-		updateRegMon();
-	
-		lastTime = currentTime - (deltaTime % timeStep);
+		console.log("Dumped ZP address " + RAM[PC[0]] + ": " + RAM[RAM[PC[0]]]);
+	} else if (byte == 244) { // 0xF4
+		// Dump absolute address
+		PC[0] += 1;
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Dumped Absolute address " + memaddr + ": " + RAM[parseInt(memaddr, 16)]);
 	}
-	if (document.getElementById("runbox").checked) {
-		requestAnimationFrame(run);
+
+	// 6502 + W65C02 OPCODES
+
+
+	/*
+
+		ADC Varients
+
+	*/
+
+	else if (hexbyte == "69") {
+		// Immediate
+		let oldA = A[0];
+		PC[0] += 1;
+		A[0] += RAM[PC[0]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0); // Update Carry Flag
+		console.log("ADC immediate");
+	} else if (hexbyte == "65") {
+		let oldA = A[0];
+		PC[0] += 1;
+		A[0] += RAM[RAM[PC[0]]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		console.log("ADC ZP");
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "75") {
+		let oldA = A[0];
+		PC[0] += 1;
+		A[0] += RAM[RAM[PC[0] + X]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		console.log("ADC ZP,X");
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "6d") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Absolute");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] += RAM[memaddr];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		PC[0] += 1;
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "7d") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Absolute,X");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] += RAM[memaddr + X[0]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		PC[0] += 1;
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "79") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Absolute,Y");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] += RAM[memaddr + Y[0]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		PC[0] += 1;
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "61") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Indexed Indirect");
+		let ZPaddr = RAM[PC[0]];
+		ZPaddr += X[0];
+		console.log(ZPaddr);
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] += RAM[parseInt(memaddr, 16)];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "71") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Indirect Indexed");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] += RAM[parseInt(memaddr, 16) + Y[0]];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
+	} else if (hexbyte == "72") {
+		let oldA = A[0];
+		PC[0] += 1;
+		console.log("ADC Indirect ZP");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] += RAM[parseInt(memaddr, 16)];
+		if (F[0] == 1) {
+			A[0] += 1;
+		}
+		updateFlagsByReg("A");
+		(oldA > A[0]) ? (F[0] = 1) : (F[0] = 0);
 	}
+
+	/*
+
+		AND Varients
+
+	*/
+
+	else if (hexbyte == "29") {
+		// Immediate
+		PC[0] += 1;
+		A[0] &= RAM[PC[0]];
+		updateFlagsByReg("A");
+		console.log("AND immediate");
+	} else if (hexbyte == "25") {
+		PC[0] += 1;
+		A[0] &= RAM[RAM[PC[0]]];
+		console.log("AND ZP");
+		updateFlagsByReg("A");
+	} else if (hexbyte == "35") {
+		PC[0] += 1;
+		A[0] &= RAM[RAM[PC[0] + X]];
+		console.log("AND ZP,X");
+		updateFlagsByReg("A");
+	} else if (hexbyte == "2d") {
+		PC[0] += 1;
+		console.log("AND Absolute");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] &= RAM[memaddr];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "3d") {
+		PC[0] += 1;
+		console.log("AND Absolute,X");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] &= RAM[memaddr + X[0]];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "39") {
+		PC[0] += 1;
+		console.log("ADC Absolute,Y");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] &= RAM[memaddr + Y[0]];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "21") {
+		PC[0] += 1;
+		console.log("ADC Indexed Indirect");
+		let ZPaddr = RAM[PC[0]];
+		ZPaddr += X[0];
+		console.log(ZPaddr);
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] &= RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "31") {
+		PC[0] += 1;
+		console.log("ADC Indirect Indexed");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] &= RAM[parseInt(memaddr, 16) + Y[0]];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "32") {
+		PC[0] += 1;
+		console.log("ADC Indirect ZP");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] &= RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("A");
+	}
+
+	/*
+
+		ASL Varients
+
+	*/
+
+	else if (hexbyte == "0a") {
+		(A[0] > 127) ? (F[0] = 1) : (F[0] = 0);
+		A[0] *= 2;
+		updateFlagsByReg("A");
+		console.log("ASL A");
+	} else if (hexbyte == "06") {
+		PC[0] += 1;
+		(RAM[RAM[PC[0]]] > 127) ? (F[0] = 1) : (F[0] = 0);
+		RAM[RAM[PC[0]]] *= 2;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+		console.log("ASL ZP");
+	} else if (hexbyte == "16") {
+		PC[0] += 1;
+		(RAM[RAM[PC[0]] + X] > 127) ? (F[0] = 1) : (F[0] = 0);
+		RAM[RAM[PC[0]] + X] *= 2;
+		updateFlagsByRAM(RAM[RAM[PC[0]] + X]);
+		console.log("ASL ZP,X");
+	} else if (hexbyte == "0e") {
+		PC[0] += 1;
+		console.log("ASL Absolute");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		(RAM[memaddr] > 127) ? (F[0] = 1) : (F[0] = 0);
+		RAM[memaddr] *= 2;
+		updateFlagsByRAM(RAM[memaddr]);
+		PC[0] += 1;
+	} else if (hexbyte == "1e") {
+		PC[0] += 1;
+		console.log("ASL Absolute");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		(RAM[memaddr + X] > 127) ? (F[0] = 1) : (F[0] = 0);
+		RAM[memaddr + X] *= 2;
+		updateFlagsByRAM(RAM[memaddr + X]);
+		PC[0] += 1;
+	}
+
+	/*
+
+		BCC
+
+	*/
+
+	else if (hexbyte == "90") {
+		PC[0] += 1;
+		console.log("BCC");
+		if (F[0] == 0) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BCS
+
+	*/
+
+	else if (hexbyte == "b0") {
+		PC[0] += 1;
+		console.log("BCS");
+		if (F[0] == 1) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BEQ
+
+	*/
+
+	else if (hexbyte == "f0") {
+		PC[0] += 1;
+		console.log("BEQ");
+		if (F[1] == 1) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BIT Varients
+
+	*/
+
+	else if (hexbyte == "89") {
+		PC[0] += 1;
+		console.log("BIT Immediate");
+		let temp = A[0] & RAM[PC[0]];
+		(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+		(RAM[PC[0]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+		temp = RAM[PC[0]] & 64;
+		(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+	} else if (hexbyte == "24") {
+		PC[0] += 1;
+		console.log("BIT ZP");
+		let temp = A[0] & RAM[RAM[PC[0]]];
+		(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+		(RAM[RAM[PC[0]]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+		temp = RAM[RAM[PC[0]]] & 64;
+		(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+	} else if (hexbyte == "34") {
+		PC[0] += 1;
+		console.log("BIT ZP,X");
+		let temp = A[0] & RAM[RAM[PC[0]] + X];
+		(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+		(RAM[RAM[PC[0]] + X] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+		temp = RAM[RAM[PC[0]] + X] & 64;
+		(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+	} else if (hexbyte == "2c") {
+		PC[0] += 1;
+		console.log("BIT Absolute");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+		memaddr = parseInt(memaddr, 16); // Convert to decimal
+		let temp = A[0] & RAM[memaddr];
+		console.log("Hex address: " + memaddr);
+		(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+		(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+		temp = RAM[memaddr] & 64;
+		(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+	} else if (hexbyte == "3c") {
+		PC[0] += 1;
+		console.log("BIT Absolute,X");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+		memaddr = parseInt(memaddr, 16); // Convert to decimal
+		memaddr += X;
+		let temp = A[0] & RAM[memaddr];
+		console.log("Hex address: " + memaddr);
+		(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+		(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+		temp = RAM[memaddr] & 64;
+		(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+	}
+		
+	/*
+
+		BMI
+
+	*/
+
+	else if (hexbyte == "30") {
+		PC[0] += 1;
+		console.log("BMI");
+		if (F[7] == 1) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+
+	/*
+
+		BNE
+
+	*/
+
+	else if (hexbyte == "d0") {
+		PC[0] += 1;
+		console.log("BNE");
+		if (F[1] == 0) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BPL
+
+	*/
+
+	else if (hexbyte == "10") {
+		PC[0] += 1;
+		console.log("BPL");
+		if (F[7] == 0) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BRA
+
+	*/
+
+	else if (hexbyte == "80") {
+		PC[0] += 1;
+		console.log("BRA");
+		(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+	}
+
+	/*
+
+		BVC
+
+	*/
+
+	else if (hexbyte == "50") {
+		PC[0] += 1;
+		console.log("BVC");
+		if (F[6] == 0) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		BVS
+
+	*/
+
+	else if (hexbyte == "70") {
+		PC[0] += 1;
+		console.log("BVS");
+		if (F[6] == 1) {
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		} else {
+			// Do nothing
+		}
+	}
+
+	/*
+
+		CLC
+
+	*/
+
+	else if (hexbyte == "18") {
+		console.log("CLC");
+		F[0] = 0;
+	}
+
+	/*
+
+		CLD
+
+	*/
+
+	else if (hexbyte == "d8") {
+		console.log("CLD");
+		F[3] = 0;
+	}
+
+	/*
+
+		CLI
+
+	*/
+
+	else if (hexbyte == "58") {
+		console.log("CLI");
+		F[2] = 0;
+	}
+
+	/*
+
+		CLV
+
+	*/
+
+	else if (hexbyte == "b8") {
+		console.log("CLV");
+		F[3] = 0;
+	}
+
+	/*
+
+		CMP Varients
+
+	*/
+
+	else if (hexbyte == "c9") {
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[PC[0]];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	}
+
+	PC[0] += 1;
+	updateRegMon();
 }
 
 function toggleRef() {
