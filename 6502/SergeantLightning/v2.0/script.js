@@ -537,9 +537,58 @@ function run() {
 
 		/*
 
-			BIT Varients coming soon...
+			BIT Varients
 
 		*/
+
+		else if (hexbyte == "89") {
+			PC[0] += 1;
+			console.log("BIT Immediate");
+			let temp = A[0] & RAM[PC[0]];
+			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+			(RAM[PC[0]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+			temp = RAM[PC[0]] & 64;
+			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+		} else if (hexbyte == "24") {
+			PC[0] += 1;
+			console.log("BIT ZP");
+			let temp = A[0] & RAM[RAM[PC[0]]];
+			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+			(RAM[RAM[PC[0]]] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+			temp = RAM[RAM[PC[0]]] & 64;
+			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+		} else if (hexbyte == "34") {
+			PC[0] += 1;
+			console.log("BIT ZP,X");
+			let temp = A[0] & RAM[RAM[PC[0]] + X];
+			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+			(RAM[RAM[PC[0]] + X] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+			temp = RAM[RAM[PC[0]] + X] & 64;
+			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+		} else if (hexbyte == "2c") {
+			PC[0] += 1;
+			console.log("BIT Absolute");
+			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+			memaddr = parseInt(memaddr, 16); // Convert to decimal
+			let temp = A[0] & RAM[memaddr];
+			console.log("Hex address: " + memaddr);
+			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+			(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+			temp = RAM[memaddr] & 64;
+			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+		} else if (hexbyte == "3c") {
+			PC[0] += 1;
+			console.log("BIT Absolute,X");
+			let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+			memaddr = parseInt(memaddr, 16); // Convert to decimal
+			memaddr += X;
+			let temp = A[0] & RAM[memaddr];
+			console.log("Hex address: " + memaddr);
+			(temp > 0) ? (F[1] == 1) : (F[1] == 0); // Set zero flag
+			(RAM[memaddr] > 127) ? (F[7] == 1) : (F[7] == 0); // Set neg. flag
+			temp = RAM[memaddr] & 64;
+			(temp == 64) ? (F[6] == 1) : (F[6] == 0); // Set overflow flag
+		}
 
 		
 		/*
