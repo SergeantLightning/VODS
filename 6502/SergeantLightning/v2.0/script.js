@@ -71,6 +71,11 @@ function returnHex(number) {
 	return number.toString(16).padStart(2, "0");
 }
 
+function getAbsoluteAddr(LB_ADDR) {
+	// Get address by the value of provided ZP address (LSB) + next ZP page (MSB)
+	return "" + RAM[LB_ADDR + 1].toString(16).padStart(2, "0") + RAM[LB_ADDR].toString(16).padStart(2, "0");
+}
+
 function TTYScrollUp(type) {
 	for (var i = 0; i < 40; i++) {
 		document.getElementsByClassName("pixel")[i].innerHTML = "";
@@ -317,7 +322,7 @@ function run() {
 		let ZPaddr = RAM[PC[0]];
 		ZPaddr += X[0];
 		console.log(ZPaddr);
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr);
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] += RAM[parseInt(memaddr, 16)];
@@ -331,7 +336,7 @@ function run() {
 		PC[0] += 1;
 		console.log("ADC Indirect Indexed");
 		let ZPaddr = RAM[PC[0]];
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] += RAM[parseInt(memaddr, 16) + Y[0]];
@@ -345,7 +350,7 @@ function run() {
 		PC[0] += 1;
 		console.log("ADC Indirect ZP");
 		let ZPaddr = RAM[PC[0]];
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] += RAM[parseInt(memaddr, 16)];
@@ -411,7 +416,7 @@ function run() {
 		let ZPaddr = RAM[PC[0]];
 		ZPaddr += X[0];
 		console.log(ZPaddr);
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] &= RAM[parseInt(memaddr, 16)];
@@ -420,7 +425,7 @@ function run() {
 		PC[0] += 1;
 		console.log("ADC Indirect Indexed");
 		let ZPaddr = RAM[PC[0]];
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] &= RAM[parseInt(memaddr, 16) + Y[0]];
@@ -429,7 +434,7 @@ function run() {
 		PC[0] += 1;
 		console.log("ADC Indirect ZP");
 		let ZPaddr = RAM[PC[0]];
-		let memaddr = "" + RAM[ZPaddr + 1].toString(16).padStart(2, "0") + RAM[ZPaddr].toString(16).padStart(2, "0"); // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		let memaddr = getAbsoluteAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
 		console.log("Indirect Address: 0x" + memaddr);
 		A[0] &= RAM[parseInt(memaddr, 16)];
@@ -471,7 +476,7 @@ function run() {
 		PC[0] += 1;
 	} else if (hexbyte == "1e") {
 		PC[0] += 1;
-		console.log("ASL Absolute");
+		console.log("ASL Absolute,X");
 		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
 		console.log("Hex address: " + memaddr);
 		memaddr = parseInt(memaddr, 16);
@@ -728,8 +733,84 @@ function run() {
 	*/
 
 	else if (hexbyte == "c9") {
+		console.log("CMP Immediate");
 		let temp = new Uint8Array(1);
 		temp[0] = RAM[PC[0]];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "c5") {
+		console.log("CMP ZP");
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[RAM[PC[0]]];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "c9") {
+		console.log("CMP ZP,X");
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[RAM[PC[0]] + X];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "cd") {
+		console.log("CMP Absolute");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+		memaddr = parseInt(memaddr, 16); // Convert to decimal
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "dd") {
+		console.log("CMP Absolute,X");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+		memaddr = parseInt(memaddr, 16); // Convert to decimal
+		memaddr += X;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "d9") {
+		console.log("CMP Absolute,Y");
+		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
+		memaddr = parseInt(memaddr, 16); // Convert to decimal
+		memaddr += Y;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "c1") {
+		console.log("CMP Indexed Indirect");
+		let ZPaddr = RAM[PC[0]] + X[0];
+		let memaddr = getAbsoluteAddr(ZPaddr);
+		console.log("ZP address: " + ZPaddr);
+		console.log("Indirect address read: " + memaddr);
+		memaddr = parseInt(memaddr, 16); // Get decimal indirect address
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "d1") {
+		console.log("CMP Indirect Indexed");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = getAbsoluteAddr(ZPaddr);
+		console.log("ZP address: " + ZPaddr);
+		console.log("Indirect address read: " + memaddr);
+		memaddr = parseInt(memaddr, 16); // Get decimal indirect address
+		memaddr += Y[0]; // Add Y register offset
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
 		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
 		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
 		temp[0] = A[0] - temp[0];
