@@ -840,6 +840,80 @@ function run() {
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	}
 
+	/*
+
+		CPX Varients
+
+	*/
+
+	else if (hexbyte == "e0") {
+		console.log("CPX Immediate");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[PC[0]];
+		(X[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(X[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = X[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "e4") {
+		console.log("CPX ZP");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[RAM[PC[0]]];
+		(X[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(X[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = X[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "ec") {
+		console.log("CPX Absolute");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = "" + returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		temp[0] = parseInt(temp[0], 16);
+		temp[0] = RAM[temp[0]];
+		(X[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(X[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = X[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	}
+
+	/*
+
+		CPY Varients
+
+	*/
+
+	else if (hexbyte == "c0") {
+		console.log("CPY Immediate");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[PC[0]];
+		(Y[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(Y[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = Y[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "c4") {
+		console.log("CPY ZP");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[RAM[PC[0]]];
+		(Y[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(Y[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = Y[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "cc") {
+		console.log("CPY Absolute");
+		PC[0] += 1;
+		let temp = new Uint8Array(1);
+		temp[0] = "" + returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		temp[0] = parseInt(temp[0], 16);
+		temp[0] = RAM[temp[0]];
+		(Y[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(Y[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = Y[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
