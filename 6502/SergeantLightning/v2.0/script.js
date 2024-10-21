@@ -18,7 +18,6 @@ var VOFS = 0;
 // Speed emulation variables
 
 let lastTime = performance.now();
-const timeStep = 1000 / 240; // 240 Hz, emulation has no difference past this
 
 function randomByte() {
 	return Math.floor(Math.random() * 256);
@@ -222,8 +221,8 @@ function run() {
 	var byte = RAM[PC[0]];
 	var hexbyte = byte.toString(16).padStart(2, "0");
 	console.log("Reading from ROM: 0x" + hexbyte + " | " + byte);
-		// SPECIAL OPCODES
-		if (byte == 252) { // 0xFC
+	// SPECIAL OPCODES
+	if (byte == 252) { // 0xFC
 		PC[0] += 1;
 		console.log("Dumped ZP address " + RAM[PC[0]] + ": " + RAM[RAM[PC[0]]]);
 	} else if (byte == 244) { // 0xF4
@@ -496,7 +495,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BCC");
 		if (F[0] == 0) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -512,7 +511,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BCS");
 		if (F[0] == 1) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -528,7 +527,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BEQ");
 		if (F[1] == 1) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -599,7 +598,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BMI");
 		if (F[7] == 1) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -616,7 +615,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BNE");
 		if (F[1] == 0) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -632,7 +631,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BPL");
 		if (F[7] == 0) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -647,7 +646,7 @@ function run() {
 	else if (hexbyte == "80") {
 		PC[0] += 1;
 		console.log("BRA");
-		(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+		(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 	}
 
 	/*
@@ -660,7 +659,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BVC");
 		if (F[6] == 0) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -676,7 +675,7 @@ function run() {
 		PC[0] += 1;
 		console.log("BVS");
 		if (F[6] == 1) {
-			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 257)) : (PC[0] += (RAM[PC[0]]));
+			(RAM[PC[0]] > 127) ? (PC[0] += (RAM[PC[0]] - 256)) : (PC[0] += (RAM[PC[0]]));
 		} else {
 			// Do nothing
 		}
@@ -733,6 +732,7 @@ function run() {
 	*/
 
 	else if (hexbyte == "c9") {
+		PC[0] += 1;
 		console.log("CMP Immediate");
 		let temp = new Uint8Array(1);
 		temp[0] = RAM[PC[0]];
@@ -741,6 +741,7 @@ function run() {
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	} else if (hexbyte == "c5") {
+		PC[0] += 1;
 		console.log("CMP ZP");
 		let temp = new Uint8Array(1);
 		temp[0] = RAM[RAM[PC[0]]];
@@ -749,6 +750,7 @@ function run() {
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	} else if (hexbyte == "c9") {
+		PC[0] += 1;
 		console.log("CMP ZP,X");
 		let temp = new Uint8Array(1);
 		temp[0] = RAM[RAM[PC[0]] + X];
@@ -757,6 +759,7 @@ function run() {
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	} else if (hexbyte == "cd") {
+		PC[0] += 1;
 		console.log("CMP Absolute");
 		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
 		memaddr = parseInt(memaddr, 16); // Convert to decimal
@@ -766,7 +769,9 @@ function run() {
 		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+		PC[0] += 1;
 	} else if (hexbyte == "dd") {
+		PC[0] += 1;
 		console.log("CMP Absolute,X");
 		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
 		memaddr = parseInt(memaddr, 16); // Convert to decimal
@@ -778,6 +783,7 @@ function run() {
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	} else if (hexbyte == "d9") {
+		PC[0] += 1;
 		console.log("CMP Absolute,Y");
 		let memaddr = "" + returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get absolute address in hex
 		memaddr = parseInt(memaddr, 16); // Convert to decimal
@@ -788,7 +794,9 @@ function run() {
 		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+		PC[0] += 1;
 	} else if (hexbyte == "c1") {
+		PC[0] += 1;
 		console.log("CMP Indexed Indirect");
 		let ZPaddr = RAM[PC[0]] + X[0];
 		let memaddr = getAbsoluteAddr(ZPaddr);
@@ -802,6 +810,7 @@ function run() {
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	} else if (hexbyte == "d1") {
+		PC[0] += 1;
 		console.log("CMP Indirect Indexed");
 		let ZPaddr = RAM[PC[0]];
 		let memaddr = getAbsoluteAddr(ZPaddr);
@@ -815,10 +824,27 @@ function run() {
 		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
 		temp[0] = A[0] - temp[0];
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
+	} else if (hexbyte == "d2") {
+		PC[0] += 1;
+		console.log("CMP ZP Indirect");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = getAbsoluteAddr(ZPaddr);
+		console.log("ZP address: " + ZPaddr);
+		console.log("Indirect address read: " + memaddr);
+		memaddr = parseInt(memaddr, 16); // Get decimal indirect address
+		let temp = new Uint8Array(1);
+		temp[0] = RAM[memaddr];
+		(A[0] >= temp[0]) ? (F[0] = 1) : (F[0] = 0); // Set Carry
+		(A[0] == temp[0]) ? (F[1] = 1) : (F[1] = 0); // Set Zero
+		temp[0] = A[0] - temp[0];
+		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	}
 
 	PC[0] += 1;
 	updateRegMon();
+	if (document.getElementById("runbox").checked) {
+		requestAnimationFrame(run);
+	}
 }
 
 function toggleRef() {
