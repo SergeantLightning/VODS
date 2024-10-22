@@ -19,6 +19,8 @@ var VOFS = 0;
 
 let lastTime = performance.now();
 
+// System Functions
+
 function randomByte() {
 	return Math.floor(Math.random() * 256);
 }
@@ -66,6 +68,8 @@ function updateFlagsByRAM(addr) {
 	(addr == 0) ? (F[1] = 1) : (F[1] = 0);
 }
 
+// Helpful functions
+
 function returnHex(number) {
 	return number.toString(16).padStart(2, "0");
 }
@@ -74,6 +78,22 @@ function getIndirectAddr(LB_ADDR) {
 	// Get address by the value of provided ZP address (LSB) + next ZP page (MSB)
 	return "" + RAM[LB_ADDR + 1].toString(16).padStart(2, "0") + RAM[LB_ADDR].toString(16).padStart(2, "0");
 }
+
+function pushToStack(byte) {
+	RAM[256 + SP[0]] = byte;
+	SP[0] -= 1;
+}
+
+function pullFromStack(mode) {
+	SP[0] += 1;
+	if (mode == 1) {
+		return returnHex(RAM[256 + SP[0]]); // Return byte as hex
+	} else {
+		return RAM[256 + SP[0]]; // Return byte as decimal
+	}
+}
+
+// Screen emulation
 
 function TTYScrollUp(type) {
 	for (var i = 0; i < 40; i++) {
@@ -130,6 +150,8 @@ function updateScreen() {
 	}
 }
 
+// Keyboard emulation
+
 window.onkeydown = function(event) {
 	let keycode = event.key;
 	if (keycode == "Backspace") {
@@ -148,6 +170,8 @@ window.onkeydown = function(event) {
 	}
 	console.log(keycode);
 }
+
+// Code emulation
 
 function reset() {
 	console.log("\nRESETTING MACHINE\n");
@@ -1062,7 +1086,7 @@ function run() {
 
 	*/
 
-	else if (hexbyte == "3a") {
+	else if (hexbyte == "1a") {
 		console.log("INC Accumulator");
 		A[0] += 1;
 		updateFlagsByReg("A");
@@ -1153,12 +1177,52 @@ function run() {
 		PC[0] = (parseInt(targetaddr, 16) - 1);
 	}
 
+	/*
+
+		JSR
+
+	*/
+
+	else if (hexbyte == "20") {
+		console.log("JSR");
+		let temp = PC[0];
+		temp += 3;
+		temp = returnHex(temp);
+		let LB = temp.slice(2,4);
+		let HB = temp.slice(0,2);
+		LB = parseInt(LB, 16); // Push PCL
+		HB = parseInt(HB, 16); // Push PCH
+		pushToStack(HB);
+		pushToStack(LB);
+		console.log("Pushed " + temp);
+		PC[0] += 1;
+		temp = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]); // Get subroutine address
+		PC[0] = (parseInt(temp, 16) - 1);
+	}
+
+	/*
+
+		RTS
+
+	*/
+
+	else if (hexbyte == "60") {
+		console.log("RTS");
+		let LB = pullFromStack(1); // Pull value as hex
+		let HB = pullFromStack(1);
+		console.log("Pulled L=" + LB + " H=" + HB);
+		let temp = HB + LB; // Assemble 16-Bit PC address
+		PC[0] = (parseInt(temp, 16) - 1);
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
 		requestAnimationFrame(run);
 	}
 }
+
+// Other functions
 
 function toggleRef() {
 	if (document.getElementById("ref").style.display != "none") {
