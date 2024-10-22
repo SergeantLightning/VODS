@@ -1215,6 +1215,82 @@ function run() {
 		PC[0] = (parseInt(temp, 16) - 1);
 	}
 
+	/*
+
+		LDA Varients
+
+	*/
+
+	else if (hexbyte == "a9") {
+		console.log("LDA Immediate");
+		PC[0] += 1;
+		A[0] = RAM[PC[0]];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "a5") {
+		console.log("LDA ZP");
+		PC[0] += 1;
+		A[0] = RAM[RAM[PC[0]]];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "b5") {
+		console.log("LDA ZP,X");
+		PC[0] += 1;
+		A[0] = RAM[RAM[PC[0]]+X[0]];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "ad") {
+		PC[0] += 1;
+		console.log("LDA Absolute");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		A[0] = RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("A");
+		PC[0] += 1;
+	} else if (hexbyte == "bd") {
+		PC[0] += 1;
+		console.log("LDA Absolute,X");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + X[0]);
+		A[0] = RAM[parseInt(memaddr, 16) + X[0]];
+		updateFlagsByReg("A");
+		PC[0] += 1;
+	} else if (hexbyte == "b9") {
+		PC[0] += 1;
+		console.log("LDA Absolute,Y");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + Y[0]);
+		A[0] = RAM[parseInt(memaddr, 16) + Y[0]];
+		updateFlagsByReg("A");
+		PC[0] += 1;
+	} else if (hexbyte == "a1") {
+		PC[0] += 1;
+		console.log("LDA Indexed Indirect");
+		let memaddr = getIndirectAddr(RAM[PC[0]] + X[0]);
+		memaddr = parseInt(memaddr, 16);
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		A[0] = RAM[memaddr];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "b1") {
+		PC[0] += 1;
+		console.log("LDA Indirect Indexed");
+		let memaddr = getIndirectAddr(RAM[PC[0]]);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += Y[0]
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		A[0] = RAM[memaddr];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "b2") {
+		PC[0] += 1;
+		console.log("LDA Indirect ZP");
+		let memaddr = getIndirectAddr(RAM[PC[0]]);
+		console.log("Hex address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		A[0] = RAM[memaddr];
+		updateFlagsByReg("A");
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
