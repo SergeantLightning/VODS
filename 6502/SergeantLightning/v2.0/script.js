@@ -935,7 +935,7 @@ function run() {
 		console.log("DEC ZP,X");
 		PC[0] += 1;
 		RAM[RAM[PC[0]+X[0]]] -= 1;
-		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+		updateFlagsByRAM(RAM[RAM[PC[0]+X[0]]]);
 	} else if (hexbyte == "ce") {
 		console.log("DEC Absolute");
 		PC[0] += 1;
@@ -1054,6 +1054,103 @@ function run() {
 		console.log("Indirect address read: " + memaddr);
 		memaddr = parseInt(memaddr, 16); // Get decimal indirect address
 		A[0] ^= RAM[memaddr];
+	}
+
+	/*
+
+		INC Varients
+
+	*/
+
+	else if (hexbyte == "3a") {
+		console.log("INC Accumulator");
+		A[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "c6") {
+		console.log("DEC ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] += 1;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "d6") {
+		console.log("INC ZP,X");
+		PC[0] += 1;
+		RAM[RAM[PC[0]+X[0]]] += 1;
+		updateFlagsByRAM(RAM[RAM[PC[0]+X[0]]]);
+	} else if (hexbyte == "ce") {
+		console.log("INC Absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr] += 1;
+		updateFlagsByRAM(RAM[memaddr]);
+		PC[0] += 1;
+	} else if (hexbyte == "de") {
+		console.log("INC Absolute,X");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr + X[0]] += 1;
+		updateFlagsByRAM(RAM[memaddr + X[0]]);
+		PC[0] += 1;
+	}
+
+	/*
+
+		INX
+
+	*/
+
+	else if (hexbyte == "e8") {
+		console.log("INX");
+		X[0] += 1;
+		updateFlagsByReg("X");
+	}
+
+	/*
+
+		INY
+
+	*/
+
+	else if (hexbyte == "c8") {
+		console.log("INY");
+		Y[0] += 1;
+		updateFlagsByRed("Y");
+	}
+
+	/*
+
+		JMP Varients
+
+	*/
+
+	else if (hexbyte == "4c") {
+		PC[0] += 1;
+		console.log("JMP Absolute");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Going to: 0x" + memaddr);
+		PC[0] = (parseInt(memaddr, 16) - 1);
+	} else if (hexbyte == "6c") {
+		PC[0] += 1;
+		console.log("JMP Indirect");
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Indirect address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		let targetaddr = returnHex(RAM[memaddr + 1]) + returnHex(RAM[memaddr]);
+		console.log("Target address: 0x" + targetaddr);
+		PC[0] = (parseInt(targetaddr, 16) - 1);
+	} else if (hexbyte == "7c") {
+		PC[0] += 1;
+		console.log("JMP Absolute Indexed Indirect");
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Absolute address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += X[0];
+		let targetaddr = returnHex(RAM[memaddr + 1]) + returnHex(RAM[memaddr]);
+		console.log("Target address: 0x" + targetaddr);
+		PC[0] = (parseInt(targetaddr, 16) - 1);
 	}
 
 	PC[0] += 1;
