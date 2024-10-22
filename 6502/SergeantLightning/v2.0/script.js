@@ -914,6 +914,66 @@ function run() {
 		(temp[0] > 127) ? (F[7] = 1) : (F[7] = 0);   // Set Neg.
 	}
 
+	/*
+
+		DEC Varients
+
+	*/
+
+	else if (hexbyte == "3a") {
+		console.log("DEC Accumulator");
+		A[0] -= 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "c6") {
+		console.log("DEC ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] -= 1;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "d6") {
+		console.log("DEC ZP,X");
+		PC[0] += 1;
+		RAM[RAM[PC[0]+X[0]]] -= 1;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "ce") {
+		console.log("DEC Absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr] -= 1;
+		updateFlagsByRAM(RAM[memaddr]);
+	} else if (hexbyte == "de") {
+		console.log("DEC Absolute,X");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr + X[0]] -= 1;
+		updateFlagsByRAM(RAM[memaddr + X[0]]);
+	}
+
+	/*
+
+		DEX
+
+	*/
+
+	else if (hexbyte == "ca") {
+		X[0] -= 1;
+		updateFlagsByReg("X");
+	}
+
+	/*
+
+		DEY
+
+	*/
+
+	else if (hexbyte == "88") {
+		Y[0] -= 1;
+		updateFlagsByReg("Y");
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
