@@ -426,7 +426,7 @@ function run() {
 		updateFlagsByReg("A");
 	} else if (hexbyte == "39") {
 		PC[0] += 1;
-		console.log("ADC Absolute,Y");
+		console.log("AND Absolute,Y");
 		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
 		console.log("Hex address: " + memaddr);
 		memaddr = parseInt(memaddr, 16);
@@ -435,7 +435,7 @@ function run() {
 		updateFlagsByReg("A");
 	} else if (hexbyte == "21") {
 		PC[0] += 1;
-		console.log("ADC Indexed Indirect");
+		console.log("AND Indexed Indirect");
 		let ZPaddr = RAM[PC[0]];
 		ZPaddr += X[0];
 		console.log(ZPaddr);
@@ -446,7 +446,7 @@ function run() {
 		updateFlagsByReg("A");
 	} else if (hexbyte == "31") {
 		PC[0] += 1;
-		console.log("ADC Indirect Indexed");
+		console.log("AND Indirect Indexed");
 		let ZPaddr = RAM[PC[0]];
 		let memaddr = getIndirectAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
@@ -455,7 +455,7 @@ function run() {
 		updateFlagsByReg("A");
 	} else if (hexbyte == "32") {
 		PC[0] += 1;
-		console.log("ADC Indirect ZP");
+		console.log("AND Indirect ZP");
 		let ZPaddr = RAM[PC[0]];
 		let memaddr = getIndirectAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
 		console.log("ZP address: " + RAM[PC[0]]);
@@ -1423,6 +1423,186 @@ function run() {
 
 	else if (hexbyte == "ea") {
 		console.log("NOP");
+	}
+
+	/*
+
+		ORA Varients
+
+	*/
+
+	else if (hexbyte == "09") {
+		// Immediate
+		PC[0] += 1;
+		A[0] |= RAM[PC[0]];
+		updateFlagsByReg("A");
+		console.log("ORA immediate");
+	} else if (hexbyte == "05") {
+		PC[0] += 1;
+		A[0] |= RAM[RAM[PC[0]]];
+		console.log("ORA ZP");
+		updateFlagsByReg("A");
+	} else if (hexbyte == "15") {
+		PC[0] += 1;
+		A[0] |= RAM[RAM[PC[0] + X[0]]];
+		console.log("ORA ZP,X");
+		updateFlagsByReg("A");
+	} else if (hexbyte == "0d") {
+		PC[0] += 1;
+		console.log("ORA Absolute");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] |= RAM[memaddr];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "1d") {
+		PC[0] += 1;
+		console.log("ORA Absolute,X");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] |= RAM[memaddr + X[0]];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "19") {
+		PC[0] += 1;
+		console.log("ORA Absolute,Y");
+		let memaddr = "" + RAM[PC[0] + 1].toString(16).padStart(2, "0") + RAM[PC[0]].toString(16).padStart(2, "0");
+		console.log("Hex address: " + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		A[0] |= RAM[memaddr + Y[0]];
+		PC[0] += 1;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "01") {
+		PC[0] += 1;
+		console.log("ORA Indexed Indirect");
+		let ZPaddr = RAM[PC[0]];
+		ZPaddr += X[0];
+		console.log(ZPaddr);
+		let memaddr = getIndirectAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] |= RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "11") {
+		PC[0] += 1;
+		console.log("ORA Indirect Indexed");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = getIndirectAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] |= RAM[parseInt(memaddr, 16) + Y[0]];
+		updateFlagsByReg("A");
+	} else if (hexbyte == "12") {
+		PC[0] += 1;
+		console.log("ORA Indirect ZP");
+		let ZPaddr = RAM[PC[0]];
+		let memaddr = getIndirectAddr(ZPaddr) // Get indirect address by the value of provided ZP address (LSB) + next ZP page (MSB)
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Indirect Address: 0x" + memaddr);
+		A[0] |= RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("A");
+	}
+
+	/*
+
+		PHA
+
+	*/
+
+	else if (hexbyte == "48") {
+		console.log("PHA");
+		pushToStack(A[0]);
+	}
+
+	/*
+
+		PHP
+
+	*/
+
+	else if (hexbyte == "08") {
+		console.log("PHP");
+		let flagsCopy = "";
+		for (var i = 0; i < 8; i++) {
+			flagsCopy += F[i]; // Compile flags into binary string
+		}
+		console.log("Pushing: " + flagsCopy);
+		pushToStack(parseInt(flagsCopy, 2));
+	}
+
+	/*
+
+		PHX
+
+	*/
+
+	else if (hexbyte == "da") {
+		console.log("PHX");
+		pushToStack(X[0]);
+	}
+
+	/*
+
+		PHY
+
+	*/
+
+	else if (hexbyte == "5a") {
+		console.log("PHY");
+		pushToStack(Y[0]);
+	}
+
+	/*
+
+		PLA
+
+	*/
+
+	else if (hexbyte == "68") {
+		console.log("PLA");
+		A[0] = pullFromStack(0);
+	}
+
+	/*
+
+		PLP
+
+	*/
+
+	else if (hexbyte == "28") {
+		console.log("PLP");
+		let x = 7;
+		let temp = pullFromStack(0);
+		temp = temp.toString(2).padStart(8, "0");
+		for (let i = 0; i < 8; i++) {
+			F[x] = (temp.charAt(i));
+			x -= 1;
+		}
+		console.log("Pulled Flags: " + F);
+	}
+
+	/*
+
+		PLX
+
+	*/
+
+	else if (hexbyte == "fa") {
+		console.log("PLX");
+		X[0] = pullFromStack(0);
+	}
+
+	/*
+
+		PLY
+
+	*/
+
+	else if (hexbyte == "7a") {
+		console.log("PLY");
+		Y[0] = pullFromStack(0);
 	}
 
 	PC[0] += 1;
