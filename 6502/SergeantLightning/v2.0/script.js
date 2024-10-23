@@ -1605,6 +1605,123 @@ function run() {
 		Y[0] = pullFromStack(0);
 	}
 
+	/*
+
+		ROL Varients
+
+	*/
+
+	else if (hexbyte == "2a") {
+		console.log("ROL Accumulator");
+		let oldCarry = F[0];
+		((A[0] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
+		A[0] *= 2;
+		A[0] |= oldCarry;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "26") {
+		PC[0] += 1;
+		console.log("ROL ZP");
+		let oldCarry = F[0];
+		((RAM[RAM[PC[0]]] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
+		RAM[RAM[PC[0]]] *= 2;
+		RAM[RAM[PC[0]]] |= oldCarry;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "36") {
+		PC[0] += 1;
+		console.log("ROL ZP,X");
+		let oldCarry = F[0];
+		((RAM[RAM[PC[0]]+X[0]] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
+		RAM[RAM[PC[0]]+X[0]] *= 2;
+		RAM[RAM[PC[0]]+X[0]] |= oldCarry;
+		updateFlagsByRAM(RAM[RAM[PC[0]]+X[0]]);
+	} else if (hexbyte == "2e") {
+		console.log("ROL Absolute");
+		PC[0] += 1;
+		let oldCarry = F[0];
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		((RAM[memaddr] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
+		RAM[memaddr] *= 2;
+		RAM[memaddr] |= oldCarry;
+		PC[0] += 1;
+		updateFlagsByRAM(RAM[memaddr]);
+	} else if (hexbyte == "3e") {
+		console.log("ROL Absolute,X");
+		PC[0] += 1;
+		let oldCarry = F[0];
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + X[0]);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += X[0]
+		((RAM[memaddr] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
+		RAM[memaddr] *= 2;
+		RAM[memaddr] |= oldCarry;
+		PC[0] += 1;
+		updateFlagsByRAM(RAM[memaddr]);
+	}
+
+	/*
+
+		ROR Varients
+
+	*/
+
+	else if (hexbyte == "6a") {
+		console.log("ROR Accumulator");
+		let oldCarry;
+		(F[0] == 1) ? (oldCarry = 128) : (oldCarry = 0);
+		F[0] = A[0] & 1;
+		A[0] /= 2;
+		A[0] |= oldCarry;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "66") {
+		PC[0] += 1;
+		console.log("ROR ZP");
+		let oldCarry;
+		(F[0] == 1) ? (oldCarry = 128) : (oldCarry = 0);
+		F[0] = RAM[RAM[PC[0]]] & 1;
+		RAM[RAM[PC[0]]] /= 2;
+		RAM[RAM[PC[0]]] |= oldCarry;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "76") {
+		PC[0] += 1;
+		console.log("ROR ZP,X");
+		let oldCarry;
+		(F[0] == 1) ? (oldCarry = 128) : (oldCarry = 0);
+		F[0] = RAM[RAM[PC[0]]+X[0]] & 1;
+		RAM[RAM[PC[0]]+X[0]] /= 2;
+		RAM[RAM[PC[0]]+X[0]] |= oldCarry;
+		updateFlagsByRAM(RAM[RAM[PC[0]]+X[0]]);
+	} else if (hexbyte == "6e") {
+		console.log("ROR Absolute");
+		PC[0] += 1;
+		let oldCarry;
+		(F[0] == 1) ? (oldCarry = 128) : (oldCarry = 0);
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		F[0] = RAM[memaddr] & 1;
+		RAM[memaddr] /= 2;
+		RAM[memaddr] |= oldCarry;
+		PC[0] += 1;
+		updateFlagsByRAM(RAM[memaddr]);
+	} else if (hexbyte == "7e") {
+		console.log("ROL Absolute,X");
+		PC[0] += 1;
+		let oldCarry;
+		(F[0] == 1) ? (oldCarry = 128) : (oldCarry = 0);
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + X[0]);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += X[0]
+		F[0] = RAM[memaddr] & 1;
+		RAM[memaddr] /= 2;
+		RAM[memaddr] |= oldCarry;
+		PC[0] += 1;
+		updateFlagsByRAM(RAM[memaddr]);
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
