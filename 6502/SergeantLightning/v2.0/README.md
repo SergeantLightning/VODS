@@ -16,6 +16,14 @@
 - Last pressed key at 0x7FFE
 - Parallel Port at 0x7FFF
 
+## VERY IMPORTANT NOTES!!!
+
+- ADC and SBC never edit the overflow flag
+- Interrupts are only triggered by keyboard or parallel port (NOT IMPLEMENTED YET)
+- BRK instructions stop execution (NOT IMPLEMENTED YET)
+- The following W65C02 Instructions ARE NOT implemented: BBR, BBS, RMB, SMB
+- The following W65C02 Instructions WILL BE implemented: STP, STZ, TRB, TSB, WAI
+
 ## Goals
 
 - Get some hex monitor running
@@ -23,3 +31,4 @@
 
 ## Todo
 - Re-code all instructions
+- Add W65C02 instructions
