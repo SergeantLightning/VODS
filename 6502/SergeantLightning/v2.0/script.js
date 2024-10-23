@@ -1369,6 +1369,62 @@ function run() {
 		PC[0] += 1;
 	}
 
+	/*
+
+		LSR Varients
+
+	*/
+
+	else if (hexbyte == "4a") {
+		console.log("LSR Accumulator");
+		F[0] = A[0] & 1; // Set/clear carry flag
+		A[0] /= 2;
+		updateFlagsByReg("A");
+	} else if (hexbyte == "46") {
+		PC[0] += 1;
+		console.log("LSR ZP");
+		F[0] = RAM[RAM[PC[0]]] & 1;
+		RAM[RAM[PC[0]]] /= 2;
+		updateFlagsByRAM(RAM[RAM[PC[0]]]);
+	} else if (hexbyte == "56") {
+		PC[0] += 1;
+		console.log("LSR ZP,X");
+		F[0] = RAM[RAM[PC[0]]+X[0]] & 1;
+		RAM[RAM[PC[0]]+X[0]] /= 2;
+		updateFlagsByRAM(RAM[RAM[PC[0]]+X[0]]);
+	} else if (hexbyte == "4e") {
+		console.log("LSR Absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Using address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		F[0] = RAM[memaddr] & 1;
+		RAM[memaddr] /= 2;
+		updateFlagsByRAM(RAM[memaddr]);
+		PC[0] += 1;
+	} else if (hexbyte == "5e") {
+		console.log("LSR Absolute,X");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Using address: 0x" + memaddr + " + " + X[0]);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += X[0];
+		F[0] = RAM[memaddr] & 1;
+		RAM[memaddr] /= 2;
+		updateFlagsByRAM(RAM[memaddr]);
+		PC[0] += 1;
+	}
+
+	/*
+
+		NOP
+
+	*/
+
+	else if (hexbyte == "ea") {
+		console.log("NOP");
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
