@@ -23,6 +23,7 @@
 - BRK instructions stop execution (NOT IMPLEMENTED YET)
 - The following W65C02 Instructions ARE NOT implemented: BBR, BBS, RMB, SMB
 - The following W65C02 Instructions WILL BE implemented: STP, STZ, TRB, TSB, WAI
+- Decimal mode doesn't change anything
 
 ## Goals
 
