@@ -1291,6 +1291,84 @@ function run() {
 		updateFlagsByReg("A");
 	}
 
+	/*
+
+		LDX Varients
+
+	*/
+
+	else if (hexbyte == "a2") {
+		console.log("LDX Immediate");
+		PC[0] += 1;
+		X[0] = RAM[PC[0]];
+		updateFlagsByReg("X");
+	} else if (hexbyte == "a6") {
+		console.log("LDX ZP");
+		PC[0] += 1;
+		X[0] = RAM[RAM[PC[0]]];
+		updateFlagsByReg("X");
+	} else if (hexbyte == "b6") {
+		console.log("LDX ZP,Y");
+		PC[0] += 1;
+		X[0] = RAM[RAM[PC[0]]+Y[0]];
+		updateFlagsByReg("X");
+	} else if (hexbyte == "ae") {
+		console.log("LDX Absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Absolute Address: 0x" + memaddr);
+		X[0] = RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("X");
+		PC[0] += 1;
+	} else if (hexbyte == "be") {
+		console.log("LDX Absolute,Y");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Absolute Address: 0x" + memaddr + " + " + Y[0]);
+		X[0] = RAM[parseInt((memaddr+Y[0]), 16)];
+		updateFlagsByReg("X");
+		PC[0] += 1;
+	}
+
+	/*
+
+		LDY Varients
+
+	*/
+
+	else if (hexbyte == "a0") {
+		console.log("LDY Immediate");
+		PC[0] += 1;
+		Y[0] = RAM[PC[0]];
+		updateFlagsByReg("Y");
+	} else if (hexbyte == "a4") {
+		console.log("LDY ZP");
+		PC[0] += 1;
+		Y[0] = RAM[RAM[PC[0]]];
+		updateFlagsByReg("Y");
+	} else if (hexbyte == "b4") {
+		console.log("LDY ZP,X");
+		PC[0] += 1;
+		Y[0] = RAM[RAM[PC[0]]+X[0]];
+		updateFlagsByReg("Y");
+	} else if (hexbyte == "ac") {
+		console.log("LDY Absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Absolute Address: 0x" + memaddr);
+		Y[0] = RAM[parseInt(memaddr, 16)];
+		updateFlagsByReg("Y");
+		PC[0] += 1;
+	} else if (hexbyte == "bc") {
+		console.log("LDY Absolute,X");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Absolute Address: 0x" + memaddr + " + " + Y[0]);
+		Y[0] = RAM[parseInt((memaddr+X[0]), 16)];
+		updateFlagsByReg("Y");
+		PC[0] += 1;
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
