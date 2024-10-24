@@ -15,9 +15,9 @@ var COLSET = ["#000", "#F00", "#0F0", "#FF0", "#00F", "#F0F", "#0FF", "#FFF"];
 var HOFS = 0;
 var VOFS = 0;
 
-// Speed emulation variables
+// Control variables
 
-let lastTime = performance.now();
+var STOPFLAG = false;
 
 // System Functions
 
@@ -179,6 +179,8 @@ function reset() {
 	X[0] = 2;
 	Y[0] = 4;
 	SP[0] = 255;
+	STOPFLAG = false;
+	document.getElementById("step-btn").disabled = false;
 	for (let i = 0; i < 8; i++) {
 		F[i] = 0;
 	}
@@ -1943,9 +1945,102 @@ function run() {
 		RAM[memaddr] = A[0];
 	}
 
+	/*
+
+		STP
+
+	*/
+
+	else if (hexbyte == "db") {
+		STOPFLAG = true;
+		document.getElementById("step-btn").disabled = "true";
+		console.log("STP");
+		alert("EMULATOR HALTED: Press \"Reset\" to start again");
+	}
+
+	/*
+
+		STX Varients
+
+	*/
+
+	else if (hexbyte == "86") {
+		console.log("STX ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] = X[0];
+	} else if (hexbyte == "96") {
+		console.log("STX ZP,Y");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]+Y[0]] = X[0];
+	} else if (hexbyte == "8e") {
+		console.log("STX absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr] = X[0];
+		PC[0] += 1;
+	}
+
+	/*
+
+		STY Varients
+
+	*/
+
+	else if (hexbyte == "84") {
+		console.log("STY ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] = Y[0];
+	} else if (hexbyte == "94") {
+		console.log("STY ZP,X");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]+X[0]] = Y[0];
+	} else if (hexbyte == "8c") {
+		console.log("STY absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr] = Y[0];
+		PC[0] += 1;
+	}
+
+	/*
+
+		STZ Varients
+
+	*/
+
+	else if (hexbyte == "64") {
+		console.log("STZ ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] = 0;
+	} else if (hexbyte == "74") {
+		console.log("STZ ZP,X");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]+X[0]] = 0;
+	} else if (hexbyte == "9c") {
+		console.log("STZ absolute");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr] = 0;
+		PC[0] += 1;
+	} else if (hexbyte == "9e") {
+		console.log("STZ absolute,X");
+		PC[0] += 1;
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		RAM[memaddr + X[0]] = 0;
+		PC[0] += 1;
+	}
+
 	PC[0] += 1;
 	updateRegMon();
-	if (document.getElementById("runbox").checked) {
+	if (document.getElementById("runbox").checked && STOPFLAG == false) {
 		requestAnimationFrame(run);
 	}
 }
