@@ -2038,6 +2038,134 @@ function run() {
 		PC[0] += 1;
 	}
 
+	/*
+
+		TAX
+
+	*/
+
+	else if (hexbyte == "aa") {
+		console.log("TAX");
+		X[0] = A[0];
+		updateFlagsByReg("X");
+	}
+
+	/*
+
+		TAY
+
+	*/
+
+	else if (hexbyte == "a8") {
+		console.log("TAy");
+		Y[0] = A[0];
+		updateFlagsByReg("Y");
+	}
+
+	/*
+
+		TRB Varients
+
+	*/
+
+	else if (hexbyte == "14") {
+		PC[0] += 1;
+		console.log("TRB ZP");
+		((RAM[RAM[PC[0]]] & A[0]) > 0) ? (F[1] == 1) : (F[1] = 0);
+		let copyOfA = A[0];
+		let temp = "";
+		copyOfA = copyOfA.toString(2).padStart(8, "0");
+		for (let i = 0; i < 8; i++) {
+			(copyOfA.charAt(i) == "1") ? (temp += "0") : (temp += "1");
+			// Invert copy of A register, save in temp
+		}
+		temp = parseInt(temp, 2); // Convert to decimal
+		RAM[RAM[PC[0]]] &= temp; // Reset Bits
+	} else if (hexbyte == "1c") {
+		PC[0] += 1;
+		console.log("TRB absolute");
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		((RAM[memaddr] & A[0]) > 0) ? (F[1] == 1) : (F[1] = 0);
+		let copyOfA = A[0];
+		let temp = "";
+		copyOfA = copyOfA.toString(2).padStart(8, "0");
+		for (let i = 0; i < 8; i++) {
+			(copyOfA.charAt(i) == "1") ? (temp += "0") : (temp += "1");
+			// Invert copy of A register, save in temp
+		}
+		temp = parseInt(temp, 2); // Convert to decimal
+		RAM[memaddr] &= temp; // Reset Bits
+		PC[0] += 1;
+	}
+
+	/*
+
+		TSB Varients
+
+	*/
+
+	else if (hexbyte == "04") {
+		PC[0] += 1;
+		console.log("TSB ZP");
+		((RAM[RAM[PC[0]]] & A[0]) > 0) ? (F[1] == 1) : (F[1] = 0);
+		RAM[RAM[PC[0]]] |= A[0]; // Set Bits
+	} else if (hexbyte == "0c") {
+		PC[0] += 1;
+		console.log("TSB absolute");
+		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
+		console.log("Target: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		((RAM[memaddr] & A[0]) > 0) ? (F[1] == 1) : (F[1] = 0);
+		RAM[memaddr] |= A[0]; // Set Bits
+		PC[0] += 1;
+	}
+
+	/*
+
+		TSX
+
+	*/
+
+	else if (hexbyte == "ba") {
+		console.log("TSX");
+		X[0] = SP[0];
+	}
+
+	/*
+
+		TXA
+
+	*/
+
+	else if (hexbyte == "8a") {
+		console.log("TXA");
+		A[0] = X[0];
+	}
+
+	/*
+
+		TXS
+
+	*/
+
+	else if (hexbyte == "9a") {
+		console.log("TXS");
+		SP[0] = X[0];
+	}
+
+	/*
+
+		TYA
+
+	*/
+
+	else if (hexbyte == "98") {
+		console.log("TYA");
+		A[0] = Y[0];
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked && STOPFLAG == false) {

@@ -21,8 +21,8 @@
 - ADC and SBC never edit the overflow flag
 - Interrupts are only triggered by keyboard or parallel port (NOT IMPLEMENTED YET)
 - BRK instructions stop execution (NOT IMPLEMENTED YET)
-- The following W65C02 Instructions ARE NOT implemented: BBR, BBS, RMB, SMB
-- The following W65C02 Instructions WILL BE implemented: STP, STZ, TRB, TSB, WAI
+- The following W65C02 Instructions WILL NOT BE implemented: BBR, BBS, RMB, SMB
+- The following W65C02 Instructions ARE CURRENTLY implemented: STP, STZ, TRB, TSB
 - Decimal mode doesn't change anything
 
 ## Goals
