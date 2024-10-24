@@ -1880,6 +1880,69 @@ function run() {
 		F[2] = 1;
 	}
 
+	/*
+
+		STA Varients
+
+	*/
+
+	else if (hexbyte == "85") {
+		console.log("STA ZP");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]] = A[0];
+	} else if (hexbyte == "95") {
+		console.log("STA ZP,X");
+		PC[0] += 1;
+		RAM[RAM[PC[0]]+X[0]] = A[0];
+	} else if (hexbyte == "8d") {
+		PC[0] += 1;
+		console.log("STA Absolute");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr);
+		RAM[parseInt(memaddr, 16)] = A[0];
+		PC[0] += 1;
+	} else if (hexbyte == "9d") {
+		PC[0] += 1;
+		console.log("STA Absolute,X");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + X[0]);
+		RAM[parseInt(memaddr, 16) + X[0]] = A[0];
+		PC[0] += 1;
+	} else if (hexbyte == "99") {
+		PC[0] += 1;
+		console.log("STA Absolute,Y");
+		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
+		console.log("Target address: 0x" + memaddr + " + " + Y[0]);
+		RAM[parseInt(memaddr, 16) + Y[0]] = A[0];
+		PC[0] += 1;
+	} else if (hexbyte == "81") {
+		PC[0] += 1;
+		console.log("STA Indexed Indirect");
+		let memaddr = getIndirectAddr(RAM[PC[0]] + X[0]);
+		memaddr = parseInt(memaddr, 16);
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		RAM[memaddr] = A[0];
+	} else if (hexbyte == "91") {
+		PC[0] += 1;
+		console.log("STA Indirect Indexed");
+		let memaddr = getIndirectAddr(RAM[PC[0]]);
+		memaddr = parseInt(memaddr, 16);
+		memaddr += Y[0]
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		RAM[memaddr] = A[0];
+	} else if (hexbyte == "92") {
+		PC[0] += 1;
+		console.log("STA Indirect ZP");
+		let memaddr = getIndirectAddr(RAM[PC[0]]);
+		console.log("Hex address: 0x" + memaddr);
+		memaddr = parseInt(memaddr, 16);
+		console.log("ZP address: " + RAM[PC[0]]);
+		console.log("Target address: " + memaddr);
+		RAM[memaddr] = A[0];
+	}
+
 	PC[0] += 1;
 	updateRegMon();
 	if (document.getElementById("runbox").checked) {
