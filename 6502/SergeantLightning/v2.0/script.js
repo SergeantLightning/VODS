@@ -111,7 +111,8 @@ function TTYScrollUp(type) {
 
 function updateScreen() {
 	// Update Characters
-	if (RAM[32763] == 13) { // CR
+	console.log("UPDATING SCREEN");
+	if (RAM[0x7ffb] == 13) { // CR
 		console.log("Detected Enter");
 		if (VOFS == 24) {
 			TTYScrollUp(0);
@@ -119,9 +120,9 @@ function updateScreen() {
 			HOFS = 0;
 			VOFS += 1;
 		}
-	} else if (RAM[32763] == 10) { // LF
+	} else if (RAM[0x7ffb] == 10) { // LF
 		// Ignore
-	} else if (RAM[32763] == 8) {
+	} else if (RAM[0x7ffb] == 8) {
 		if (HOFS == 0 && VOFS == 0) {
 			// Break
 		} else if (VOFS != 0 && HOFS == 0) {
@@ -155,18 +156,18 @@ function updateScreen() {
 window.onkeydown = function(event) {
 	let keycode = event.key;
 	if (keycode == "Backspace") {
-		RAM[32763] = 8;
+		RAM[32766] = 8;
 	} else if (keycode == "Enter") {
-		RAM[32763] = 13;
+		RAM[32766] = 13;
 	} else if (keycode == "Tab") {
-		RAM[32763] = 9; // Horizontal Tab
+		RAM[32766] = 9; // Horizontal Tab
 	} else if (keycode == "Shift") {
 		// Do nothing
 	} else if (keycode == "F2") {
 		console.log("Full RAM Dump:");
 		console.log(RAM);
 	} else {
-		RAM[32763] = Number(keycode.charCodeAt(0));
+		RAM[32766] = Number(keycode.charCodeAt(0));
 	}
 	console.log(keycode);
 }
@@ -1655,7 +1656,7 @@ function run() {
 		let memaddr = returnHex(RAM[PC[0]+1]) + returnHex(RAM[PC[0]]);
 		console.log("Target address: 0x" + memaddr + " + " + X[0]);
 		memaddr = parseInt(memaddr, 16);
-		memaddr += X[0]
+		memaddr += X[0];
 		((RAM[memaddr] & 128) == 0) ? (F[0] = 0) : (F[0] = 1);
 		RAM[memaddr] *= 2;
 		RAM[memaddr] |= oldCarry;
@@ -1902,6 +1903,9 @@ function run() {
 		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
 		console.log("Target address: 0x" + memaddr);
 		RAM[parseInt(memaddr, 16)] = A[0];
+		if (memaddr == "7ffb" || memaddr == "7ffc" || memaddr == "7ffd") {
+			updateScreen();
+		}
 		PC[0] += 1;
 	} else if (hexbyte == "9d") {
 		PC[0] += 1;
