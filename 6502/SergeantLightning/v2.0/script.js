@@ -1144,7 +1144,7 @@ function run() {
 	else if (hexbyte == "c8") {
 		console.log("INY");
 		Y[0] += 1;
-		updateFlagsByRed("Y");
+		updateFlagsByReg("Y");
 	}
 
 	/*
