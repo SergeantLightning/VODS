@@ -1,15 +1,15 @@
-L		= $0
-H		= $1
-RPTR	= $2		; Buffer Read Start
+L		= $0		; Address low byte
+H		= $1		; Address high byte
+RPTR		= $2		; Buffer Read Start
 WBH		= $3		; High nibble of byte to write
 WBL		= $4		; Low nibble of byte to write
-READCNT	= $5		; Counter for block reads
-HOFS	= $6		; Screen horizontal offset
-ENDL	= $7		; Used for bug work around code
+READCNT		= $5		; Counter for block reads
+HOFS		= $6		; Screen horizontal offset
+ENDL		= $7		; Used for bug work around code
 
-IN      = $0200 	; 256 Byte Input Buffer
-TTYOUT  = $7FFB 	; Teletype output
-KBIN    = $7FFE 	; Keyboard Input
+IN      	= $0200 	; 256 Byte Input Buffer
+TTYOUT  	= $7FFB 	; Teletype output
+KBIN    	= $7FFE 	; Keyboard Input
 
 	.org $8000
 
@@ -18,8 +18,8 @@ JBKSP:
 JDONE:
 	JMP DONE
 RESET:
-	CLD				; Clear decimal arithmetic mode.
-	SEI				; No interrupts
+	CLD			; Clear decimal arithmetic mode.
+	SEI			; No interrupts
 	LDY #0			; Set up buffer index
 	STY KBIN		; Clear keyboard input
 	STY RPTR		; Set up read start
@@ -34,7 +34,7 @@ BOOTMSG:
 GETKEY:
 	LDA KBIN		; New key pressed?
 	BEQ GETKEY		; No
-	CMP #13         ; CR?
+	CMP #13         	; CR?
 	BEQ GO			; Yes
 	CMP #8			; Backspace?
 	BEQ JBKSP		; Yes
@@ -50,7 +50,7 @@ GO:
 	STA IN,Y
 	INY
 	; Convert input to address
-	PHY				; Save End of input
+	PHY			; Save End of input
 	LDY RPTR
 RLOOP:
 	LDA IN,Y		; Load first character
@@ -68,18 +68,18 @@ RLOOP:
 	BRA NEXTR
 SETBLOCK:
 	INY
-	LDA IN,Y
-	JSR ATB
+	LDA IN,Y		; Load high nibble of read count
+	JSR ATB			; Convert to binary
 	ASL
 	ASL
 	ASL
 	ASL
-	STA READCNT
+	STA READCNT		; Store as high byte
 	INY
-	LDA IN,Y
-	JSR ATB
-	ORA READCNT
-	STA READCNT
+	LDA IN,Y		; Load low nibble of read count
+	JSR ATB			; Convert to binary
+	ORA READCNT		; Combine with high nibble
+	STA READCNT		; Store full read count
 	INY
 	BRA RLOOP
 GOWRITE:
@@ -97,29 +97,29 @@ READDONE:
 	PHY
 	LDY #0
 LOADLOOP:
-	CPY READCNT
-	BEQ OPDONE
-	LDA (L),Y
+	CPY READCNT		; Reached read count?
+	BEQ OPDONE		; Branch if yes
+	LDA (L),Y		; Load byte
 	PHA
 	AND #$F0		; Save high byte
 	LSR
 	LSR
 	LSR
 	LSR
-	JSR PARSEBYTE
-	STA TTYOUT
+	JSR PARSEBYTE		; Convert to ASCII character
+	STA TTYOUT		; Output it
 	PLA
 	AND #$0F		; Save low byte
-	JSR PARSEBYTE
-	STA TTYOUT
+	JSR PARSEBYTE		; Convert to ASCII character
+	STA TTYOUT		; Output it
 	INY
 
 	LDA HOFS
 	CLC
 	ADC #2
-	CMP ENDL
+	CMP ENDL		; Need to go to new line?
 	STA HOFS
-	BCS OUTCR
+	BCS OUTCR		; Branch if yes
 	BRA OUTSPACE
 OUTCR:
 	LDA #13
@@ -127,19 +127,18 @@ OUTCR:
 	LDA #6
 	STA HOFS
 	LDA #21
-	STA ENDL
+	STA ENDL		; Update text output variables
 	BRA NEXTLOAD
 OUTSPACE:
 	LDA #32
 	STA TTYOUT
 NEXTLOAD:
 	BRA LOADLOOP
-
 OPDONE:
 	PLY
 	STZ L
 	STZ H
-	STZ READCNT
+	STZ READCNT		; Reset address & read count
 	PLY
 	STY RPTR
 	LDA #13
@@ -149,17 +148,17 @@ OPDONE:
 	STA TTYOUT
 	BRA DONE
 WLOOP:
-	PHX
+	PHX			; Save X register
 	LDX #0
 GETNIBBLE:
-	CPX #2
-	BEQ NEXTW
-	LDA IN,Y		; Get low nibble
-	CMP #13
-	BEQ WDONE
-	CMP #32
-	BEQ ISSPACE
-	JSR ATB			; Convert to binary
+	CPX #2			; Done parsing byte?
+	BEQ NEXTW		; Branch if yes
+	LDA IN,Y		; Get current nibble
+	CMP #13			; CR?
+	BEQ WDONE		; Branch if yes
+	CMP #32			; Space?
+	BEQ ISSPACE		; Branch if yes, ignore it
+	JSR ATB			; Convert nibble to binary
 	STA WBH,X		; Store it
 	INX
 ISSPACE:
@@ -171,11 +170,11 @@ NEXTW:
 	ASL
 	ASL
 	ASL
-	ORA WBL			; Add low byte
+	ORA WBL			; Combine with low byte
 	STA (L)			; Store it
 	JSR INADDR		; Increment store address
 	LDX #0
-	BRA GETNIBBLE
+	BRA GETNIBBLE		; Process next byte to write to memory
 WDONE:
 	PLX
 	BRA OPDONE
@@ -190,7 +189,7 @@ DONE:
 	STZ WBH
 	STZ HOFS
 	LDA #16
-	STA ENDL
+	STA ENDL		; Reset variables for the next operation
 	JMP GETKEY
 
 ; SUBROUTINES
@@ -212,7 +211,7 @@ SDONE:
 
 PARSEBYTE:
 	CMP #10			; 0-9?
-	BCC PARSEDIG	; Yes, fall through if no
+	BCC PARSEDIG		; Yes, fall through if no
 	CLC
 	ADC #55
 	RTS
