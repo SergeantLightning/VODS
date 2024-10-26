@@ -1,15 +1,15 @@
-L	= $0
-H	= $1
-RPTR	= $2	; Buffer Read Start
-WBH	= $3	; High nibble of byte to write
-WBL	= $4	; Low nibble of byte to write
-READCNT	= $5	; Counter for block reads
-HOFS	= $6	; Screen horizontal offset
-ENDL	= $7	; Used for bug work around code
+L		= $0
+H		= $1
+RPTR	= $2		; Buffer Read Start
+WBH		= $3		; High nibble of byte to write
+WBL		= $4		; Low nibble of byte to write
+READCNT	= $5		; Counter for block reads
+HOFS	= $6		; Screen horizontal offset
+ENDL	= $7		; Used for bug work around code
 
-IN      = $0200 ; 256 Byte Input Buffer
-TTYOUT  = $7FFB ; Teletype output
-KBIN    = $7FFE ; Keyboard Input
+IN      = $0200 	; 256 Byte Input Buffer
+TTYOUT  = $7FFB 	; Teletype output
+KBIN    = $7FFE 	; Keyboard Input
 
 	.org $8000
 
@@ -18,31 +18,31 @@ JBKSP:
 JDONE:
 	JMP DONE
 RESET:
-	CLD		; Clear decimal arithmetic mode.
-	SEI		; No interrupts
-	LDY #0		; Set up buffer index
-	STY KBIN	; Clear keyboard input
-	STY RPTR	; Set up read start
-	STY READCNT	; Clear block read counter
-	STZ HOFS	; Clear screen horizontal offset
+	CLD				; Clear decimal arithmetic mode.
+	SEI				; No interrupts
+	LDY #0			; Set up buffer index
+	STY KBIN		; Clear keyboard input
+	STY RPTR		; Set up read start
+	STY READCNT		; Clear block read counter
+	STZ HOFS		; Clear screen horizontal offset
 	LDA #16
 	STA ENDL
 BOOTMSG:
-	LDA #':'	; Ready symbol
-	STA TTYOUT	; Output it
+	LDA #':'		; Ready symbol
+	STA TTYOUT		; Output it
 	LDY #0
 GETKEY:
-	LDA KBIN	; New key pressed?
-	BEQ GETKEY	; No
+	LDA KBIN		; New key pressed?
+	BEQ GETKEY		; No
 	CMP #13         ; CR?
-	BEQ GO		; Yes
-	CMP #8		; Backspace?
-	BEQ JBKSP	; Yes
-	CMP #$5B	; Invalid character?
-	BCS JDONE	; Yes, don't store or display it
-	STA IN,Y	; Store key
+	BEQ GO			; Yes
+	CMP #8			; Backspace?
+	BEQ JBKSP		; Yes
+	CMP #$5B		; Invalid character?
+	BCS JDONE		; Yes, don't store or display it
+	STA IN,Y		; Store key
 	INY
-	STA TTYOUT	; Output key
+	STA TTYOUT		; Output key
 	BRA JDONE
 GO:
 	LDA #13
@@ -50,19 +50,21 @@ GO:
 	STA IN,Y
 	INY
 	; Convert input to address
-	PHY		; Save End of input
+	PHY				; Save End of input
 	LDY RPTR
 RLOOP:
-	LDA IN,Y	; Load first character
-	CMP #13		; End of input?
+	LDA IN,Y		; Load first character
+	CMP #13			; End of input?
 	BEQ READDONE	; Yes
-	CMP #'>'	; Block read?
+	CMP #'>'		; Block read?
 	BEQ SETBLOCK	; Yes
-	CMP #'<'	; Writing?
-	BEQ GOWRITE	; Yes
+	CMP #'<'		; Writing?
+	BEQ GOWRITE		; Yes
+	CMP #'R'		; Running another program?
+	BEQ RUNPROG		; Yes
 	; Digit Parsing
 	JSR SHIFT
-	JSR ATB		; Convert ASCII character to binary
+	JSR ATB			; Convert ASCII character to binary
 	BRA NEXTR
 SETBLOCK:
 	INY
@@ -84,6 +86,8 @@ GOWRITE:
 	PHY
 	INY
 	JMP WLOOP
+RUNPROG:
+	JMP (L)			; Jump to program address
 NEXTR:
 	ORA L
 	STA L
@@ -126,7 +130,7 @@ OUTCR:
 	STA ENDL
 	BRA NEXTLOAD
 OUTSPACE:
-	LDA #" "
+	LDA #32
 	STA TTYOUT
 NEXTLOAD:
 	BRA LOADLOOP
@@ -150,20 +154,28 @@ WLOOP:
 GETNIBBLE:
 	CPX #2
 	BEQ NEXTW
-	LDA IN,Y	; Get low nibble
-	JSR ATB		; Convert to binary
-	STA WBH,X	; Store it
-	INY
+	LDA IN,Y		; Get low nibble
+	CMP #13
+	BEQ WDONE
+	CMP #32
+	BEQ ISSPACE
+	JSR ATB			; Convert to binary
+	STA WBH,X		; Store it
 	INX
+ISSPACE:
+	INY
 	BRA GETNIBBLE
 NEXTW:
-	LDA WBH		; Get high byte
+	LDA WBH			; Get high byte
 	ASL
 	ASL
 	ASL
 	ASL
-	ORA WBL		; Add low byte
-	STA (L)		; Store it
+	ORA WBL			; Add low byte
+	STA (L)			; Store it
+	JSR INADDR		; Increment store address
+	LDX #0
+	BRA GETNIBBLE
 WDONE:
 	PLX
 	BRA OPDONE
@@ -196,14 +208,10 @@ SLOOP:
 	BRA SLOOP
 SDONE:
 	PLX
-	.byte $FC
-	.byte $1
-	.byte $FC
-	.byte $2
 	RTS
 
 PARSEBYTE:
-	CMP #10		; 0-9?
+	CMP #10			; 0-9?
 	BCC PARSEDIG	; Yes, fall through if no
 	CLC
 	ADC #55
@@ -214,15 +222,28 @@ PARSEDIG:
 	RTS
 
 ATB:
-	CMP #'A'	; Letter?
-	BCS LETTER	; Yes, fall through if digit
+	CMP #'A'		; Letter?
+	BCS LETTER		; Yes, fall through if digit
 	SEC
-	SBC #48		; Convert ASCII digit to binary digit
+	SBC #48			; Convert ASCII digit to binary digit
 	RTS
 LETTER:
 	SEC
-	SBC #55		; ASCII to binary
+	SBC #55			; ASCII to binary
 	RTS
+
+INADDR:
+	PHA
+	LDA L
+	CMP #$FF
+	BEQ INHB		; Need to increment high byte
+INLB:
+	INC L
+	PLA
+	RTS
+INHB:
+	INC H
+	BRA INLB
 
 	.org $FFFC
 	.word RESET
