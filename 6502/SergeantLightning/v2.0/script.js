@@ -1093,17 +1093,17 @@ function run() {
 		console.log("INC Accumulator");
 		A[0] += 1;
 		updateFlagsByReg("A");
-	} else if (hexbyte == "c6") {
-		console.log("DEC ZP");
+	} else if (hexbyte == "e6") {
+		console.log("INC ZP");
 		PC[0] += 1;
 		RAM[RAM[PC[0]]] += 1;
 		updateFlagsByRAM(RAM[RAM[PC[0]]]);
-	} else if (hexbyte == "d6") {
+	} else if (hexbyte == "f6") {
 		console.log("INC ZP,X");
 		PC[0] += 1;
 		RAM[RAM[PC[0]+X[0]]] += 1;
 		updateFlagsByRAM(RAM[RAM[PC[0]+X[0]]]);
-	} else if (hexbyte == "ce") {
+	} else if (hexbyte == "ee") {
 		console.log("INC Absolute");
 		PC[0] += 1;
 		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
@@ -1112,7 +1112,7 @@ function run() {
 		RAM[memaddr] += 1;
 		updateFlagsByRAM(RAM[memaddr]);
 		PC[0] += 1;
-	} else if (hexbyte == "de") {
+	} else if (hexbyte == "fe") {
 		console.log("INC Absolute,X");
 		PC[0] += 1;
 		let memaddr = returnHex(RAM[PC[0] + 1]) + returnHex(RAM[PC[0]]);
