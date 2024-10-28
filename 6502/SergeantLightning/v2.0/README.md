@@ -27,9 +27,12 @@
 
 ## Goals
 
-- Get some hex monitor running
-- Get Tiny BASIC running
+- Get some hex monitor running ✔️
+- Make a C++ Version for more speed
+- Get BASIC running
 
 ## Todo
-- Re-code all instructions
-- Add W65C02 instructions
+- Re-code all instructions ✔️
+- Add some W65C02 instructions ✔️
+- Code Parallel Port I/O
+- Code Interrupts
