@@ -3,7 +3,7 @@ CONFIG_2A := 1
 
 CONFIG_CBM_ALL := 0
 
-CONFIG_DATAFLG := 1
+;CONFIG_DATAFLG := 1
 CONFIG_EASTER_EGG := 0
 CONFIG_FILE := 0; support PRINT#, INPUT#, GET#, CMD
 CONFIG_NO_CR := 0; terminal needs explicit CRs on line ends
@@ -14,10 +14,10 @@ CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
 ZP_START1 = $00
-ZP_START2 = $08
+ZP_START2 = $0A
 ; Big gap to leave space for input buffer in case it's loaded into ZP (it shouldn't be for CBM BASIC 2)
-ZP_START3 = $8F
-ZP_START4 = $A2
+ZP_START3 = $70
+ZP_START4 = $7B
 
 ; extra/override ZP variables
 CURDVC			:= $000E
@@ -42,20 +42,6 @@ RAMSTART2		:= $0300
 ENTROPY = $E844
 
 ; monitor functions
-;OPEN	:= $FFC0
-;CLOSE	:= $FFC3
-;CHKIN	:= $FFC6
-;CHKOUT	:= $FFC9
-;CLRCH	:= $FFCC
-CHRIN	:= $FFCF
-CHROUT	:= $FFD2
-;LOAD	:= $FFD5
-;SAVE	:= $FFD8
-;VERIFY	:= $FFDB
-;SYS	:= $FFDE
-;ISCNTC	:= $FFE1
-;GETIN	:= $FFE4
-;CLALL	:= $FFE7
-;LE7F3	:= $E7F3; for CBM1
-MONCOUT	:= CHROUT
-MONRDKEY := CHRIN
+ISCNTC	:= $FFE1
+MONCOUT	:= CHIN
+MONRDKEY := CHOUT
