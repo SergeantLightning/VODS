@@ -101,7 +101,10 @@ L29B9:
   .else
     .ifndef APPLE
         ldy     #$00
-        sty     INPUTBUFFER,x
+        pha
+        tya
+        sta     INPUTBUFFER,x
+        pla
         ldx     #LINNUM+1
     .endif
     .if .def(MICROTAN) || .def(SYM1)

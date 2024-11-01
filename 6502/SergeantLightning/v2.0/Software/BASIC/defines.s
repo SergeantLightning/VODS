@@ -26,7 +26,6 @@ AIM65 := 1
 SYM1 := 1
 .include "defines_sym1.s"
 .elseif .def(vods6502)
-vods6502 := 1
 .include "defines_vods6502.s"
 .endif
 
