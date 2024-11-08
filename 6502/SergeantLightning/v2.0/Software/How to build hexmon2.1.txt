@@ -1,7 +1,0 @@
-To build hexmon2.1, use the following commands:
-
-> ca65 -o hexmon2.1.o hexmon2.1.s
-This command created an object file from the hexmon2.1 source code, which includes the actual code along with where everything should go in memory, signified by .segment and .org statements in the code
-
-> ld65 -C slvods6502.cfg hexmon2.1.o -o hexmon2.1.bin
-This command creates the final binary (which should be exactly 32,768 bytes) of the hexmon program. It takes the slvods6502.cfg linker config file to know where to put various things in the code, whether it's in RAM (assigned memory addresses), or ROM (placed in the binary)
