@@ -1,3 +1,16 @@
+; Hexmon2.1 By SergeantLightning
+;
+; Should compile to 298 Bytes (including reset/interrupt vectors)
+;
+; >> Type an address in hex to view it's contents, such as C000 or F
+; >> Type an address followed by greater than sign, and then a hex number 00 - FF to view 0 - 255 bytes starting at the entered address, such as 8000>10
+; >> Type an address, less than sign, followed with bytes to write to an address.
+; You can write this test program to memory: 1000<A9 41 8D FB 7F 4C 00 10
+; Note: Bytes less than 15 must be padded with a zero
+;
+; >> Type an address followed by R to jump to a memory location
+; Example: 1000R
+
 KBIN	= $7FFE			; Keyboard input
 TTYOUT	= $7FFB			; Teletype output
 IN	= $80			; 128 byte input buffer in ZP
@@ -19,6 +32,8 @@ NEXTOP:
 	STA TTYOUT		; Output it
 	STZ KBIN
 	STZ BYTE
+	STZ AL
+	STZ AH
 	STZ RDCNT		; Clear ZP variables
 GETKEY:
 	LDA KBIN
