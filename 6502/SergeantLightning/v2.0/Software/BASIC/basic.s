@@ -1,10 +1,12 @@
 ; System Variables
-ZPSTART = $0
-RAMSTART = $0400
-RAMSIZE  = $7C00
-ROMSTART = $8000
-TXTBUFFER = $200
-INTVARS = $300
+ZPSTART   = $0          ; Start of ZP where BASIC can store variables
+RAMSTART  = $0400       ; Start of program memory
+RAMSIZE   = $7C00       ; Size of memory (starting at RAMSTART, can't auto detect)
+ROMSTART  = $8000       ; Start of code ROM
+TXTBUFFER = $200        ; 256-Byte Input Buffer start
+INTVARS   = $300        ; 52 Bytes for integer variables (-32767 to 32767)
+ARR       = $334        ; 64-Byte 32 number long array (signed 16-Bit)
+NEXT      = $374        ; The next variable can be allocated starting here
 
 KB = $7FFE
 SCREEN = $7FFB
@@ -14,7 +16,8 @@ SCREEN = $7FFB
 LINENUM = ZPSTART       ; Current program line number, 2 Bytes
 MATCHCNT = ZPSTART+2    ; Command match counter, 1 byte
 CMDNUM = ZPSTART+3      ; Command number, 1 byte
-LADDR = ZPSTART+4       ; Last address used in POKE or PEEK, 2 bytes
+LWORD = ZPSTART+4       ; Last parsed word (little-endian), 2 bytes
+LBYTE = ZPSTART+6       ; Last parsed byte, 1 byte
 
 
     .org ROMSTART
@@ -54,3 +57,5 @@ BKSP:
 
     .include "command.s"
     .include "function.s"
+    .include "messages.s"
+    .include "end.s"

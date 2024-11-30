@@ -1,4 +1,4 @@
-; System functions
+; I/O functions
 CHRIN:
     LDA KB
     BEQ KEYNOTFOUND
@@ -17,10 +17,55 @@ CHROUT:
     STA SCREEN
     RTS
 
-INTERRUPT:
-    RTI               ; Feel free to edit if your machine needs to run code during interrupts
+; Command processing functions
 
-    .org $FFFA
-    .word INTERRUPT
-    .word RESET
-    .word INTERRUPT
+GETBYTE:
+    PHA
+    LDA TXTBUFFER,Y
+    JSR ATB
+    ASL
+    ASL
+    ASL
+    ASL
+    STA LBYTE
+    INY
+    LDA TXTBUFFER,Y
+    JSR ATB
+    ORA LBYTE
+    STA LBYTE
+    INY
+    PLA
+    RTS
+
+GETWORD:
+    JSR GETBYTE
+    LDA LBYTE
+    STA LWORD+1
+    JSR GETBYTE
+    LDA LBYTE
+    STA LWORD
+    RTS
+
+
+ATB:
+    CMP #'G'          ; Invalid digit?
+    BEQ INVALID
+    CMP #'A'          ; Letter?
+    BCS LETTER        ; Yes, fall through if digit
+    SEC
+    SBC #48           ; Convert ASCII digit to binary digit
+    RTS
+LETTER:
+    SBC #55           ; ASCII to binary
+    RTS
+INVALID:
+    PHA               ; If invalid, returns with overflow flag set.
+
+    PHP               ; Here's a trick to set the overflow flag
+    PLA               ; Move flags into A register
+    ORA #64           ; Overflow flag is bit 6, set it to 1 (overflow set)
+    PHA
+    PLP               ; Move A register to flags, now overflow flag is set
+
+    PLA
+    RTS

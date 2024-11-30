@@ -2,6 +2,7 @@ ISCMD:
   STA TXTBUFFER,Y
   JSR CHROUT
   LDY #0
+  STY KB
 ISCMDLOOP:
   LDA CMDLST,Y
   BEQ CMDNOTFOUND
@@ -49,7 +50,6 @@ READYTOJUMP:
 
 CMDJMPTBL:
   .word ISPRINT
-  .word ISLET
   .word ISIF
   .word ISGOTO
   .word ISGOSUB
@@ -60,13 +60,12 @@ CMDJMPTBL:
   .word ISEND
   .word ISNEW
   .word ISLIST
-  .word ISDIM
+  .word ISARR
   .word ISPEEK
   .word ISTOHEX
 
 CMDLST:
   .byte "PRINT",3   ; Print command, all commands end with 0x3 if not last command in list.
-  .byte "LET",3
   .byte "IF",3
   .byte "GOTO",3
   .byte "GOSUB",3
@@ -77,7 +76,7 @@ CMDLST:
   .byte "END",3
   .byte "NEW",3
   .byte "LIST",3
-  .byte "DIM(",3
+  .byte "ARR(",3
   .byte "PEEK(",3
   .byte "TOHEX(",3
   .word 0           ; Terminating 0
@@ -85,7 +84,7 @@ CMDLST:
 PRERR:
   LDX #0
 ERRLOOP:
-  LDA errmsg,X
+  LDA syntaxerr,X
   BEQ DONEPRERR
   JSR CHROUT
   INX
@@ -94,15 +93,23 @@ DONEPRERR:
   RTS
 
 
-errmsg: .byte "Syntax error",13,0    ; WARNING: This message only outputs a CR. If you need CR + LF, replace the .byte command with this: .byte "Syntax error",13,10,0
-
-
 ; Command handlers
 
 ISPRINT:
-  JMP NEXTOP
-
-ISLET:
+  INY
+  LDA TXTBUFFER,Y
+  CMP #$23          ; Commas or space?
+  BCC ISPRINT       ; Skip them
+PRLOOP:
+  JSR CHROUT
+  INY
+  LDA TXTBUFFER,Y
+  CMP #$22          ; Closing commas?
+  BEQ DONEPRINT     ; Yes, done with print
+  JMP PRLOOP
+DONEPRINT:
+  LDA #13
+  JSR CHROUT
   JMP NEXTOP
 
 ISIF:
@@ -135,7 +142,7 @@ ISNEW:
 ISLIST:
   JMP NEXTOP
 
-ISDIM:
+ISARR:
   JMP NEXTOP
 
 ISPEEK:

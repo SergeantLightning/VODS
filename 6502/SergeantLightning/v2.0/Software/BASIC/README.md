@@ -7,11 +7,12 @@
 - Commands ***MUST*** be given in uppercase
 - If your program counts line numbers by 10, it will leave 9 spaces for commands behind it. **This will reduce how big your program can be**
 - Excluding line numbers, each command can be up to 64 Characters long, and takes up 64 bytes of memory.
+- There are only 26 signed 16-Bit variables, named A - Z. To use them, type a dollar sign followed by the variable's name. Example: $Z = 72F0
+- There is 1 array called ARR, which holds 32 values. You can read from it by giving an index, and write to it by giving an index + value from -32767 to 32767. Examples: ARR(1F), ARR(2A, -7FF0)
 
 ## List of keywords (None do anything yet)
 
 - PRINT
-- LET
 - IF
 - GOTO
 - GOSUB
@@ -22,6 +23,12 @@
 - END
 - NEW
 - LIST
-- DIM()
+- ARR()
 - PEEK()
 - TOHEX()
+
+## Special characters
+
+- $ means variable
+- Math operators: + - * /
+- ; means omit new line
