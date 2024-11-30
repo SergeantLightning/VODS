@@ -1,0 +1,145 @@
+ISCMD:
+  STA TXTBUFFER,Y
+  JSR CHROUT
+  LDY #0
+ISCMDLOOP:
+  LDA CMDLST,Y
+  BEQ CMDNOTFOUND
+  CMP #3
+  BEQ WASCMDFOUND
+  EOR TXTBUFFER,X
+  BEQ CMDMATCH
+NEXTCMDLOOP:
+  INX
+  INY
+  JMP ISCMDLOOP
+CMDNOTFOUND:
+  JSR PRERR
+  JMP NEXTOP
+CMDMATCH:
+  INC MATCHCNT
+  JMP NEXTCMDLOOP
+WASCMDFOUND:
+  CPX MATCHCNT
+  BEQ CMDFOUND
+  LDX #0
+  STX MATCHCNT
+  INC CMDNUM
+  INY
+  JMP ISCMDLOOP
+CMDFOUND:
+  LDA CMDNUM
+  TAX
+  LDA #0
+GETJMPOFFSET:
+  CPX #0
+  BEQ READYTOJUMP
+  CLC
+  ADC #2
+  DEX
+  JMP GETJMPOFFSET
+READYTOJUMP:
+  TAX
+  ; The RTS Trick for the jump table (WARNING: VODS EMULATOR PULLS LOW BYTE, THEN HIGH BYTE IN RTS INSTRUCTION. THIS MAY NOT BE THE SAME FOR REAL 6502 CPUs)
+  LDA CMDJMPTBL+1,X
+  PHA
+  LDA CMDJMPTBL,X
+  PHA
+  RTS
+
+CMDJMPTBL:
+  .word ISPRINT
+  .word ISLET
+  .word ISIF
+  .word ISGOTO
+  .word ISGOSUB
+  .word ISRETURN
+  .word ISFOR
+  .word ISPOKE
+  .word ISINPUT
+  .word ISEND
+  .word ISNEW
+  .word ISLIST
+  .word ISDIM
+  .word ISPEEK
+  .word ISTOHEX
+
+CMDLST:
+  .byte "PRINT",3   ; Print command, all commands end with 0x3 if not last command in list.
+  .byte "LET",3
+  .byte "IF",3
+  .byte "GOTO",3
+  .byte "GOSUB",3
+  .byte "RETURN",3
+  .byte "FOR",3
+  .byte "POKE",3
+  .byte "INPUT",3
+  .byte "END",3
+  .byte "NEW",3
+  .byte "LIST",3
+  .byte "DIM(",3
+  .byte "PEEK(",3
+  .byte "TOHEX(",3
+  .word 0           ; Terminating 0
+
+PRERR:
+  LDX #0
+ERRLOOP:
+  LDA errmsg,X
+  BEQ DONEPRERR
+  JSR CHROUT
+  INX
+  JMP ERRLOOP
+DONEPRERR:
+  RTS
+
+
+errmsg: .byte "Syntax error",13,0    ; WARNING: This message only outputs a CR. If you need CR + LF, replace the .byte command with this: .byte "Syntax error",13,10,0
+
+
+; Command handlers
+
+ISPRINT:
+  JMP NEXTOP
+
+ISLET:
+  JMP NEXTOP
+
+ISIF:
+  JMP NEXTOP  
+
+ISGOTO:
+  JMP NEXTOP
+
+ISGOSUB:
+  JMP NEXTOP
+
+ISRETURN:
+  JMP NEXTOP
+
+ISFOR:
+  JMP NEXTOP
+
+ISPOKE:
+  JMP NEXTOP
+
+ISINPUT:
+  JMP NEXTOP
+
+ISEND:
+  JMP NEXTOP
+
+ISNEW:
+  JMP NEXTOP
+
+ISLIST:
+  JMP NEXTOP
+
+ISDIM:
+  JMP NEXTOP
+
+ISPEEK:
+  JMP NEXTOP
+
+ISTOHEX:
+  JMP NEXTOP
