@@ -1,3 +1,0 @@
-# VODS BASIC - Files taken from mist64/msbasic
-
-In progress...
