@@ -98,18 +98,42 @@ DONEPRERR:
 ISPRINT:
   INY
   LDA TXTBUFFER,Y
-  CMP #$23          ; Commas or space?
+  CMP #13           ; CR?
+  BEQ DONEPRINT     ; Yes, done with command
+  CMP #$23          ; Quotes or space?
   BCC ISPRINT       ; Skip them
+  CMP #'$'          ; Dollar sign?
+  BEQ ISVAR         ; Yes, print variable
+  CMP #';'          ; Omit new line?
+  BEQ PRNONL        ; Yes
 PRLOOP:
   JSR CHROUT
   INY
   LDA TXTBUFFER,Y
-  CMP #$22          ; Closing commas?
-  BEQ DONEPRINT     ; Yes, done with print
+  CMP #$22          ; Closing quotes?
+  BEQ ISPRINT       ; Yes, done with print
   JMP PRLOOP
+ISVAR:
+  INY
+  LDA TXTBUFFER,Y
+  CMP #$5B          ; Greater than Z?
+  BCS INVALIDVAR
+  SEC
+  SBC #65           ; Get variable number
+  JSR PRVAR         ; Print it
+  JMP ISPRINT
+INVALIDVAR:
+  LDX #0
+IVLOOP:
+  LDA isnotvar,X
+  BEQ DONEPRINT
+  JSR CHROUT
+  INX
+  JMP IVLOOP
 DONEPRINT:
   LDA #13
   JSR CHROUT
+PRNONL:
   JMP NEXTOP
 
 ISIF:

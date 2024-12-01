@@ -18,6 +18,7 @@ MATCHCNT = ZPSTART+2    ; Command match counter, 1 byte
 CMDNUM = ZPSTART+3      ; Command number, 1 byte
 LWORD = ZPSTART+4       ; Last parsed word (little-endian), 2 bytes
 LBYTE = ZPSTART+6       ; Last parsed byte, 1 byte
+YSAVE = ZPSTART+7       ; Used instead of pushing Y register to stack, 1 byte
 
 
     .org ROMSTART

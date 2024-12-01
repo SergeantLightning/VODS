@@ -69,3 +69,57 @@ INVALID:
 
     PLA
     RTS
+
+BTA:
+    CMP #10           ; 0-9?
+    BCC PARSEDIG      ; Yes, fall through if no
+    CLC
+    ADC #55
+    RTS
+PARSEDIG:
+    ADC #48
+    RTS
+
+PRVAR:
+    TAX
+    LDA #0
+GETVAROFFSET:
+    CPX #0
+    BEQ VAROFFSETREADY
+    CLC
+    ADC #2
+    DEX
+    JMP GETVAROFFSET
+VAROFFSETREADY:
+    TAX
+    LDA INTVARS,X
+    BPL VARISPOS
+    PHA
+    LDA #'-'          ; Negative sign
+    JSR CHROUT
+    PLA
+VARISPOS:
+    AND #$7F          ; Set top bit to 0
+    STY YSAVE
+    LDY #2
+VAROUTLOOP:
+    CPY #0
+    BEQ DONEPRVAR
+    PHA
+    LSR
+    LSR
+    LSR
+    LSR
+    JSR BTA
+    JSR CHROUT
+    PLA
+    AND #$0F
+    JSR BTA
+    JSR CHROUT
+    DEY
+    INX
+    LDA INTVARS,X
+    JMP VAROUTLOOP
+DONEPRVAR:
+    LDY YSAVE
+    RTS
