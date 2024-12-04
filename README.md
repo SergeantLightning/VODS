@@ -1,8 +1,8 @@
-# VODS - Vintage OS Development Systems
+# VODS™ - Vintage OS Development Systems™
 
 ![License](https://img.shields.io/badge/License-CC--BY--SA--4.0-1E90FF)&nbsp;&nbsp;![PR Status](https://img.shields.io/badge/Pull_Requests-Accepting_Now-00B000)
 
-VODS is a 8/16 Bit computer development platform designed for asipring computer developers who don't have access to the real hardware or can't find a proper emulator online. **Emulators can be web-based (HTML/CSS/JS) or app based (C/C++/Rust) It would be really nice if your emulator isn't runtime dependent, but it's not a requirement.**
+VODS™ is a 8/16 Bit computer development platform designed for asipring 8-Bit computer/software developers who don't have access to the real hardware or can't find a proper emulator online. **Emulators can be web-based (HTML/CSS/JS) or app based (C/C++/Rust) It would be really nice if your emulator isn't runtime dependent, but it's not a requirement.**
 
 ## Preface
 
