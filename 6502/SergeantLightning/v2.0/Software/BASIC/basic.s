@@ -19,6 +19,7 @@ CMDNUM = ZPSTART+3      ; Command number, 1 byte
 LWORD = ZPSTART+4       ; Last parsed word (little-endian), 2 bytes
 LBYTE = ZPSTART+6       ; Last parsed byte, 1 byte
 YSAVE = ZPSTART+7       ; Used instead of pushing Y register to stack, 1 byte
+LOOPCNT = ZPSTART+8     ; Count variable in for loop, 1 byte
 
 
     .org ROMSTART
@@ -41,7 +42,7 @@ GETKEY:
     JSR CHRIN
     BCC GETKEY
     CMP #13
-    BEQ ISCMD
+    BEQ GO
     CMP #8
     BEQ BKSP
     STA TXTBUFFER,Y
@@ -54,6 +55,11 @@ BKSP:
     DEY
     JSR CHROUT
     JMP GETKEY
+GO:
+    STA TXTBUFFER,Y
+    JSR CHROUT
+    JSR ISCMD
+    JMP NEXTOP
 
 
     .include "command.s"

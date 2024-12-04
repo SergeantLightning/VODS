@@ -10,6 +10,7 @@
 - There are only 26 signed 16-Bit variables, named A - Z. To use them, type a dollar sign followed by the variable's name. Example: $Z = 72F0
 - There is 1 array called ARR, which holds 32 values. You can read from it by giving an index, and write to it by giving an index + value from -32767 to 32767. Examples: ARR(1F), ARR(2A, -7FF0)
 - Variables are not stored as typical signed 16-Bit numbers. They are stored as unsigned 15-Bit numbers with the 16th bit acting as a sign bit. This means that 0x8100 equals -256 in this BASIC interpreter, but by standard is equal to -32512
+- Until further notice, you will need to pad words & bytes with 0s. This means that POKE 400,F will NOT work, but POKE 0400,0F will work.
 
 ## List of keywords
 

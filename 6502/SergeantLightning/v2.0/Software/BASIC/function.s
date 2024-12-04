@@ -19,33 +19,11 @@ CHROUT:
 
 ; Command processing functions
 
-GETBYTE:
-    PHA
+GETNIBBLE:
     LDA TXTBUFFER,Y
     JSR ATB
-    ASL
-    ASL
-    ASL
-    ASL
-    STA LBYTE
     INY
-    LDA TXTBUFFER,Y
-    JSR ATB
-    ORA LBYTE
-    STA LBYTE
-    INY
-    PLA
     RTS
-
-GETWORD:
-    JSR GETBYTE
-    LDA LBYTE
-    STA LWORD+1
-    JSR GETBYTE
-    LDA LBYTE
-    STA LWORD
-    RTS
-
 
 ATB:
     CMP #'G'          ; Invalid digit?
@@ -122,4 +100,18 @@ VAROUTLOOP:
     JMP VAROUTLOOP
 DONEPRVAR:
     LDY YSAVE
+    RTS
+
+
+SHIFTLADDR:
+    STY YSAVE       ; Save Y Register
+    LDY #4          ; Shift count
+SLOOP:
+    ASL LWORD
+    ROL LWORD+1
+    DEY
+    BEQ SDONE
+    BNE SLOOP
+SDONE:
+    LDY YSAVE       ; Restore Y
     RTS
