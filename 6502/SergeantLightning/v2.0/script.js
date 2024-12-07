@@ -682,6 +682,17 @@ function run() {
 	}
 
 	/*
+	
+		BRK
+	
+	*/
+
+	else if (byte == 0) {
+		document.getElementById("runbox").checked = false;
+		alert("Breakpoint at " + PC[0]);
+	}
+
+	/*
 
 		BVC
 
