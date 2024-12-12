@@ -765,7 +765,7 @@ function run() {
 
 	else if (hexbyte == "b8") {
 		console.log("CLV");
-		F[3] = 0;
+		F[6] = 0;
 	}
 
 	/*
