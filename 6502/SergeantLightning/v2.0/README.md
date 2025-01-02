@@ -10,6 +10,7 @@
 
 ## Hardware registers:
 
+- Interrupt Register is at address 0x7FFA
 - Teletype output is at address 0x7FFB
 - Monitor Foreground color value is at address 0x7FFC
 - Background color value is at 0x7FFD
@@ -28,7 +29,7 @@
 ## Goals
 
 - Get some hex monitor running ✔️
-- Get a modification of msbasic running
+- Test for production of 65C02 Software ✔️
 
 ## Todo
 - Re-code all instructions ✔️

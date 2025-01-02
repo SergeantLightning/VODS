@@ -18,8 +18,9 @@
 				<br><br>
 				<button onclick="start()">Start Machine</button>&nbsp;&nbsp;
 				<button onclick="toggleRef()">View usage reference</button>&nbsp;&nbsp;
-				<input type="checkbox" id="kbint"/>
-				Keyboard Interrupts? (NOT IMPLEMENTED)
+				<input type="checkbox" id="bkspfix" title="Backspace normally erases the last character shown on the screen. If this function is not working in some softwares, you can, and maybe should, disable it"/>
+				True Teletype Mode?
+				<br><br>Hover over the checkboxes for more info
 				<br><br><br><br>
 			</div>
 			<div id="ref" align="center" style="display: none;">
@@ -39,9 +40,11 @@
 			<table id="screen"></table>
 			<div></div>
 			<br>
-			<button onclick="reset()">Reset</button>
+			<button onclick="reset()">Reset Machine</button>
 			&nbsp;&nbsp;
-			<button onclick="run()" id="step-btn">Step</button>
+			<button onclick="clearScreen()">Clear Screen</button>
+			&nbsp;&nbsp;
+			<button onclick="run()" id="step-btn">Single Step</button>
 			&nbsp;&nbsp;
 			<input type="checkbox" id="runbox"/>
 			Run continuously

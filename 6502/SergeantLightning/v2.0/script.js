@@ -41,11 +41,11 @@ function start() {
 }
 
 function updateRegMon() {
-	setHTML("A", A[0]);
-	setHTML("X", X[0]);
-	setHTML("Y", Y[0]);
-	setHTML("SP", SP[0])
-	setHTML("PC", PC[0]);
+	setHTML("A", A[0].toString().padStart(3, "0"));
+	setHTML("X", X[0].toString().padStart(3, "0"));
+	setHTML("Y", Y[0].toString().padStart(3, "0"));
+	setHTML("SP", SP[0].toString().padStart(3, "0"))
+	setHTML("PC", PC[0].toString().padStart(5, "0"));
 	setHTML("C", F[0]);
 	setHTML("Z", F[1]);
 	setHTML("I", F[2]);
@@ -100,6 +100,26 @@ function pullFromStack(mode) {
 
 // Screen emulation
 
+function drawScreen() {
+	var drawing = "";
+	for (let i = 0; i < 25; i++) {
+		drawing += "<tr class='pixel-row'>";
+		for (let q = 0; q < 40; q++) {
+			drawing += "<td class='pixel' style='color: #FFF; background-color: #000'></td>";
+		}
+		drawing += "</tr>";
+	}
+
+	document.getElementById("screen").innerHTML = drawing;
+	console.log("Starting machine...\n");
+}
+
+function clearScreen() {
+	HOFS = 0;
+	VOFS = 0;
+	drawScreen();
+}
+
 function TTYScrollUp(type) {
 	for (var i = 0; i < 40; i++) {
 		document.getElementsByClassName("pixel")[i].innerHTML = "";
@@ -107,9 +127,6 @@ function TTYScrollUp(type) {
 	for (var i = 40; i < 1000; i++) {
 		document.getElementsByClassName("pixel")[i - 40].innerHTML = document.getElementsByClassName("pixel")[i].innerHTML;
 		document.getElementsByClassName("pixel")[i].innerHTML = "";
-	}
-	if (type == 0) {
-		HOFS += 1;
 	}
 	VOFS -= 1;
 }
@@ -128,15 +145,26 @@ function updateScreen() {
 	} else if (RAM[0x7ffb] == 10) { // LF
 		// Ignore
 	} else if (RAM[0x7ffb] == 8) {
-		if (HOFS == 0 && VOFS == 0) {
-			// Break
-		} else if (VOFS != 0 && HOFS == 0) {
-			VOFS -= 1;
-			HOFS = 40;
+		if (document.getElementById("bkspfix").checked == false) {
+			if (HOFS == 0 && VOFS == 0) {
+				// Break
+			} else if (VOFS != 0 && HOFS == 0) {
+				VOFS -= 1;
+				HOFS = 40;
+			} else {
+				HOFS -= 1;
+			}
+			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = "";
 		} else {
-			HOFS -= 1;
+			document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = "_";
+			if (VOFS >= 24) {
+				TTYScrollUp(1);
+			} else if (HOFS == 40) {
+				HOFS = 0;
+				VOFS += 1;
+			}
+			HOFS += 1;
 		}
-		document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = "";
 	} else {
 		document.getElementsByClassName("pixel")[Number((VOFS * 40) + HOFS)].innerHTML = String.fromCharCode(RAM[32763]);
 		if (VOFS >= 24) {
@@ -166,8 +194,8 @@ window.onkeydown = function(event) {
 		RAM[32766] = 13;
 	} else if (keycode == "Tab") {
 		RAM[32766] = 9; // Horizontal Tab
-	} else if (keycode == "Shift") {
-		// Do nothing
+	} else if (keycode == "Shift" || keycode == "CapsLock" || keycode == "Control" || keycode == "Alt" || keycode == "Delete" || keycode == "Escape" || keycode == "Unidentified" || keycode == "Meta" || keycode == "Home" || keycode == "End" || keycode == "Insert" || keycode == "PageUp" || keycode == "PageDown") {
+		// Dead keys, these shouldn't do anything
 	} else if (keycode == "F2") {
 		console.log("Full RAM Dump:");
 		console.log(RAM);
@@ -227,20 +255,7 @@ function reset() {
 	PC[0] = (startAddr);
 	console.log("Program Counter set to: " + PC[0]);
 	updateRegMon();
-
-	// Draw Screen
-
-	var drawing = "";
-	for (let i = 0; i < 25; i++) {
-		drawing += "<tr class='pixel-row'>";
-		for (let q = 0; q < 40; q++) {
-			drawing += "<td class='pixel' style='color: #FFF; background-color: #000'></td>";
-		}
-		drawing += "</tr>";
-	}
-
-	document.getElementById("screen").innerHTML = drawing;
-	console.log("Starting machine...\n");
+	drawScreen();
 }
 
 function run() {
@@ -1975,7 +1990,7 @@ function run() {
 		STOPFLAG = true;
 		document.getElementById("step-btn").disabled = "true";
 		console.log("STP");
-		alert("EMULATOR HALTED: Press \"Reset\" to start again");
+		alert("EMULATOR HALTED: Press \"Reset Machine\" to start again");
 	}
 
 	/*
@@ -2196,7 +2211,7 @@ let x = setInterval(function(){
 	} else {
 		//
 	}
-}, 2);
+}, 1);
 x;
 
 // Other functions
