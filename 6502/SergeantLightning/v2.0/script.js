@@ -2188,10 +2188,16 @@ function run() {
 
 	PC[0] += 1;
 	updateRegMon();
-	if (document.getElementById("runbox").checked && STOPFLAG == false) {
-		requestAnimationFrame(run);
-	}
 }
+
+let x = setInterval(function(){
+	if (document.getElementById("runbox").checked && STOPFLAG == false) {
+		run();
+	} else {
+		//
+	}
+}, 2);
+x;
 
 // Other functions
 
