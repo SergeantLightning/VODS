@@ -28,8 +28,7 @@
 ## Goals
 
 - Get some hex monitor running ✔️
-- Make a C++ Version for more speed
-- Get BASIC running
+- Get a modification of msbasic running
 
 ## Todo
 - Re-code all instructions ✔️
