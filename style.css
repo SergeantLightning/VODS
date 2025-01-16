@@ -1,0 +1,40 @@
+@font-face {
+	font-family: Dogica;
+	src: url("./dogica.ttf");
+	/* LINK TO FONT ONLINE: https://www.dafont.com/dogica.font */
+}
+
+body {
+	font-family: Arial;
+}
+
+#machine {
+	display: none;
+}
+
+#screen {
+	border: 1px solid #000000;
+	border-collapse: collapse;
+	font-family: Dogica;
+	color: #FFFFFF;
+	background-color: #000000;
+}
+
+.pixel-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.pixel {
+	text-align: center;
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.whitespace {
+	display: block;
+	color: #000000;
+	width: 16px;
+	height: 16px;
+}

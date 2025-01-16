@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SergeantLightning's 6502 Machine Emulator v2.0 | Powered by the VODS Project</title>
+		<meta charset="UTF-8"/>
+		<meta name="robots" content="nofollow"/>
+		<link rel="stylesheet" href="./style.css"/>
+		<script src="./script.js"></script>
+	</head>
+	<body>
+		<div id="welcome">
+			<div align="center">
+				<h1>SergeantLightning's 6502 Machine Emulator v2.0</h1>
+				<h2>Powered by <a href="https://github.com/SergeantLightning/VODS">the VODS Project</a></h2>
+				<br><br>
+				<label for="img">Upload disk image (Must be 32 KiB)</label>
+				<input type="file" id="img"/>
+				<br><br>
+				<button onclick="start()">Start Machine</button>&nbsp;&nbsp;
+				<button onclick="toggleRef()">View usage reference</button>&nbsp;&nbsp;
+				<input type="checkbox" id="bkspfix" title="Backspace normally erases the last character shown on the screen. If this function is not working in some softwares, you can, and maybe should, disable it"/>
+				True Teletype Mode?
+				<br><br>Hover over the checkboxes for more info
+				<br><br><br><br>
+			</div>
+			<div id="ref" align="center" style="display: none;">
+				<h1>User's Reference</h1>
+			</div>
+		</div>
+		<div id="machine" align="center">
+			<div id="regmon">
+				A = <span id="A">000</span> |
+				X = <span id="X">000</span> |
+				Y = <span id="Y">000</span> |
+				SP = <span id="SP">255</span> |
+				PC = <span id="PC">00000</span> |
+				N = <span id="N">0</span> | V = <span id="V">0</span> | D = <span id="D">0</span> | I = <span id="I">0</span> | Z = <span id="Z">0</span> | C = <span id="C">0</span>
+				<br><br>
+			</div>
+			<table id="screen"></table>
+			<div></div>
+			<br>
+			<button onclick="reset()">Reset Machine</button>
+			&nbsp;&nbsp;
+			<button onclick="clearScreen()">Clear Screen</button>
+			&nbsp;&nbsp;
+			<button onclick="run()" id="step-btn">Single Step</button>
+			&nbsp;&nbsp;
+			<input type="checkbox" id="runbox" title="Normal operation mode. Check this box if you are NOT debugging or single stepping, uncheck if you are"/>
+			Run continuously
+		</div>
+	</body>
+</html>
