@@ -29,11 +29,11 @@
 		</div>
 		<div id="machine" align="center">
 			<div id="regmon">
-				A = <span id="A">0</span> |
-				X = <span id="X">2</span> |
-				Y = <span id="Y">4</span> |
+				A = <span id="A">000</span> |
+				X = <span id="X">000</span> |
+				Y = <span id="Y">000</span> |
 				SP = <span id="SP">255</span> |
-				PC = <span id="PC">49152</span> |
+				PC = <span id="PC">00000</span> |
 				N = <span id="N">0</span> | V = <span id="V">0</span> | D = <span id="D">0</span> | I = <span id="I">0</span> | Z = <span id="Z">0</span> | C = <span id="C">0</span>
 				<br><br>
 			</div>
@@ -46,7 +46,7 @@
 			&nbsp;&nbsp;
 			<button onclick="run()" id="step-btn">Single Step</button>
 			&nbsp;&nbsp;
-			<input type="checkbox" id="runbox"/>
+			<input type="checkbox" id="runbox" title="Normal operation mode. Check this box if you are NOT debugging or single stepping, uncheck if you are"/>
 			Run continuously
 		</div>
 	</body>

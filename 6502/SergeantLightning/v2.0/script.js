@@ -5,7 +5,7 @@ var X = new Uint8Array(1);        // X Register
 var Y = new Uint8Array(1);        // Y Register
 var SP = new Uint8Array([255]);   // Stack Pointer (initiallized to 255, or 0xFF)
 var PC = new Uint16Array(1);      // Program Counter
-var F = [0, 0, 0, 0, 1, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal, Break, (unused), oVerflow, Negative
+var F = [0, 0, 0, 0, 0, 1, 0, 0]; // Flags --> Carry, Zero, Irq disable, Decimal, Break, (unused), oVerflow, Negative
 
 // Memory
 var RAM = new Uint8Array(65536);
@@ -194,7 +194,9 @@ window.onkeydown = function(event) {
 		RAM[32766] = 13;
 	} else if (keycode == "Tab") {
 		RAM[32766] = 9; // Horizontal Tab
-	} else if (keycode == "Shift" || keycode == "CapsLock" || keycode == "Control" || keycode == "Alt" || keycode == "Delete" || keycode == "Escape" || keycode == "Unidentified" || keycode == "Meta" || keycode == "Home" || keycode == "End" || keycode == "Insert" || keycode == "PageUp" || keycode == "PageDown") {
+	}  else if (keycode == "Escape") {
+		RAM[32766] = 0x1B // Escape
+	} else if (keycode == "Shift" || keycode == "CapsLock" || keycode == "Control" || keycode == "Alt" || keycode == "Delete" || keycode == "Unidentified" || keycode == "Meta" || keycode == "Home" || keycode == "End" || keycode == "Insert" || keycode == "PageUp" || keycode == "PageDown") {
 		// Dead keys, these shouldn't do anything
 	} else if (keycode == "F2") {
 		console.log("Full RAM Dump:");
@@ -209,9 +211,9 @@ window.onkeydown = function(event) {
 
 function reset() {
 	console.log("\nRESETTING MACHINE\n");
-	A[0] = 0;
-	X[0] = 2;
-	Y[0] = 4;
+	A[0] = randomByte();
+	X[0] = randomByte();
+	Y[0] = randomByte();
 	SP[0] = 255;
 	STOPFLAG = false;
 	document.getElementById("step-btn").disabled = false;
@@ -268,6 +270,7 @@ function run() {
 	var byte = RAM[PC[0]];
 	var hexbyte = byte.toString(16).padStart(2, "0");
 	console.log("Reading from ROM: 0x" + hexbyte + " | " + byte);
+
 	// SPECIAL OPCODES
 	if (byte == 252) { // 0xFC
 		PC[0] += 1;
